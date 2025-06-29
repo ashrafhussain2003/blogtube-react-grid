@@ -131,7 +131,7 @@ const HashtagPage: React.FC = () => {
                   Explore All Blogs
                 </Link>
               </div>
-            )}
+            </div>
           )}
         </main>
       </div>
