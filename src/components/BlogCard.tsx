@@ -50,16 +50,13 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
         
         <div className="flex flex-wrap gap-1">
           {blog.hashtags.slice(0, 3).map(tag => (
-            <button
+            <Link
               key={tag}
-              onClick={(e) => {
-                e.preventDefault();
-                window.location.href = `/hashtag/${tag}`;
-              }}
+              to={`/hashtag/${tag}`}
               className="inline-block bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hover:bg-gray-200 transition-colors border border-gray-300"
             >
               #{tag}
-            </button>
+            </Link>
           ))}
           {blog.hashtags.length > 3 && (
             <span className="text-xs text-gray-400">+{blog.hashtags.length - 3} more</span>

@@ -1,0 +1,111 @@
+
+{
+  "aws": [
+    {
+      "name": "Amazon Web Services",
+      "type": "folder",
+      "isOpen": true,
+      "children": [
+        {
+          "name": "Cloud Computing",
+          "type": "folder",
+          "children": [
+            {
+              "name": "What is Cloud Computing?",
+              "type": "blog",
+              "slug": "what-is-cloud-computing",
+              "path": "/Blogs/what-is-cloud-computing.json"
+            },
+            {
+              "name": "Benefits of Cloud Computing",
+              "type": "blog",
+              "slug": "benefits-of-cloud-computing",
+              "path": "/Blogs/benefits-of-cloud-computing.json"
+            }
+          ]
+        },
+        {
+          "name": "Services of AWS",
+          "type": "folder",
+          "children": [
+            {
+              "name": "Compute",
+              "type": "folder",
+              "children": [
+                {
+                  "name": "What is EC2?",
+                  "type": "blog",
+                  "slug": "what-is-ec2",
+                  "path": "/Blogs/what-is-ec2.json"
+                },
+                {
+                  "name": "Lambda Functions",
+                  "type": "blog",
+                  "slug": "aws-lambda-functions",
+                  "path": "/Blogs/aws-lambda-functions.json"
+                }
+              ]
+            },
+            {
+              "name": "Databases",
+              "type": "folder",
+              "children": [
+                {
+                  "name": "What is RDS?",
+                  "type": "blog",
+                  "slug": "what-is-rds",
+                  "path": "/Blogs/what-is-rds.json"
+                },
+                {
+                  "name": "What is DynamoDB?",
+                  "type": "blog",
+                  "slug": "what-is-dynamodb",
+                  "path": "/Blogs/what-is-dynamodb.json"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "react": [
+    {
+      "name": "React Fundamentals",
+      "type": "folder",
+      "isOpen": true,
+      "children": [
+        {
+          "name": "Getting Started",
+          "type": "folder",
+          "children": [
+            {
+              "name": "What is React?",
+              "type": "blog",
+              "slug": "what-is-react",
+              "path": "/Blogs/what-is-react.json"
+            },
+            {
+              "name": "React Components",
+              "type": "blog",
+              "slug": "react-components",
+              "path": "/Blogs/react-components.json"
+            }
+          ]
+        },
+        {
+          "name": "Advanced Topics",
+          "type": "folder",
+          "children": [
+            {
+              "name": "React Hooks",
+              "type": "blog",
+              "slug": "react-hooks",
+              "path": "/Blogs/react-hooks.json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
