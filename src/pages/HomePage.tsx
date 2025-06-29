@@ -23,11 +23,11 @@ const HomePage: React.FC = () => {
         <BlogCard key={blogs[i].slug} blog={blogs[i]} />
       );
       
-      // Add ad banner after every 8th blog
-      if ((i + 1) % 8 === 0 && i < blogs.length - 1) {
+      // Add ad banner after every 6th blog (3 rows of 2)
+      if ((i + 1) % 6 === 0 && i < blogs.length - 1) {
         items.push(
-          <div key={`ad-${i}`} className="col-span-full">
-            <AdBanner type="horizontal" className="my-4" />
+          <div key={`ad-${i}`} className="col-span-full my-8">
+            <AdBanner type="horizontal" />
           </div>
         );
       }
@@ -36,40 +36,37 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-2xl font-bold text-gray-900">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link to="/" className="text-2xl font-bold text-black">
               BlogTube
             </Link>
-            <div className="flex-1 max-w-2xl mx-8">
+            <div className="flex-1 max-w-xl mx-8">
               <SearchBar onSearch={handleSearch} />
-            </div>
-            <div className="hidden md:block">
-              <AdBanner type="square" className="w-24 h-16" />
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="flex gap-12">
           {/* Main Content */}
           <main className="flex-1">
             {/* Trending Section */}
-            <section className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="w-6 h-6 text-gray-700" />
-                <h2 className="text-2xl font-bold text-gray-900">Trending Hashtags</h2>
+            <section className="mb-12">
+              <div className="flex items-center gap-2 mb-6">
+                <TrendingUp className="w-5 h-5 text-black" />
+                <h2 className="text-xl font-semibold text-black">Trending</h2>
               </div>
               <div className="flex flex-wrap gap-2">
                 {trendingHashtags.map(hashtag => (
                   <Link
                     key={hashtag.name}
                     to={`/hashtag/${hashtag.name}`}
-                    className="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300"
+                    className="inline-block bg-gray-100 hover:bg-gray-200 text-black px-3 py-1.5 rounded-full text-sm transition-colors border border-gray-200"
                   >
                     #{hashtag.name} ({hashtag.count})
                   </Link>
@@ -77,14 +74,14 @@ const HomePage: React.FC = () => {
               </div>
             </section>
 
-            {/* Blog Grid - Changed to 3 columns */}
+            {/* Blog Grid - 2 columns with more spacing */}
             <section>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {renderBlogGrid()}
               </div>
               
               {blogs.length === 0 && (
-                <div className="text-center py-12">
+                <div className="text-center py-16">
                   <p className="text-gray-500 text-lg">No blogs found matching your search.</p>
                 </div>
               )}
@@ -92,20 +89,20 @@ const HomePage: React.FC = () => {
           </main>
 
           {/* Sidebar */}
-          <aside className="hidden lg:block w-80">
-            <div className="sticky top-24 space-y-6">
+          <aside className="hidden xl:block w-80">
+            <div className="sticky top-24 space-y-8">
               <AdBanner type="vertical" />
               
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900">Popular This Week</h3>
-                <div className="space-y-3">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold mb-4 text-black">Popular This Week</h3>
+                <div className="space-y-4">
                   {sampleBlogs.slice(0, 5).map((blog, index) => (
                     <Link
                       key={blog.slug}
                       to={`/blog/${blog.slug}`}
-                      className="block hover:bg-gray-50 p-2 rounded transition-colors"
+                      className="block hover:bg-gray-50 p-3 rounded transition-colors"
                     >
-                      <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                      <div className="text-sm font-medium text-black line-clamp-2">
                         {blog.title}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
@@ -121,8 +118,8 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Footer Ad */}
-      <footer className="bg-white border-t border-gray-200 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="bg-white border-t border-gray-200 py-8 mt-16">
+        <div className="max-w-6xl mx-auto px-6">
           <AdBanner type="horizontal" />
         </div>
       </footer>
