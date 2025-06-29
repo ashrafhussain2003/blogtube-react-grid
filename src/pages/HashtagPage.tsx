@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Hash } from 'lucide-react';
+import { ArrowLeft, Hash, Menu, X, EyeOff } from 'lucide-react';
 import FolderTreeSidebar from '../components/FolderTreeSidebar';
 import HashtagBlogViewer from '../components/HashtagBlogViewer';
 import { FolderNode } from '../types/folderTree';
@@ -12,7 +12,8 @@ const HashtagPage: React.FC = () => {
   const [tree, setTree] = useState<FolderNode[]>([]);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeBlogPath, setActiveBlogPath] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarHidden, setSidebarHidden] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,6 +58,13 @@ const HashtagPage: React.FC = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const toggleSidebarVisibility = () => {
+    setSidebarHidden(!sidebarHidden);
+    if (sidebarHidden) {
+      setSidebarOpen(true);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -77,10 +85,10 @@ const HashtagPage: React.FC = () => {
             <div className="flex items-center gap-4">
               <Link
                 to="/"
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Back to Home</span>
+                <span className="font-medium">Back to Blogs</span>
               </Link>
               <div className="flex items-center gap-2">
                 <Hash className="w-6 h-6 text-blue-600" />
@@ -89,25 +97,36 @@ const HashtagPage: React.FC = () => {
                 </h1>
               </div>
             </div>
-            <Link to="/" className="text-xl font-bold text-black">
-              BlogTube
-            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleSidebarVisibility}
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                title={sidebarHidden ? "Show sidebar" : "Hide sidebar"}
+              >
+                <EyeOff className="w-5 h-5" />
+              </button>
+              <Link to="/" className="text-xl font-bold text-black">
+                BlogTube
+              </Link>
+            </div>
           </div>
         </div>
       </header>
 
       <div className="flex">
         {/* Sidebar */}
-        <FolderTreeSidebar
-          tree={tree}
-          activeSlug={activeSlug}
-          onBlogSelect={handleBlogSelect}
-          isOpen={sidebarOpen}
-          onToggle={toggleSidebar}
-        />
+        {!sidebarHidden && (
+          <FolderTreeSidebar
+            tree={tree}
+            activeSlug={activeSlug}
+            onBlogSelect={handleBlogSelect}
+            isOpen={sidebarOpen}
+            onToggle={toggleSidebar}
+          />
+        )}
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-0">
+        <main className={`flex-1 ${sidebarHidden ? '' : 'lg:ml-0'}`}>
           {tree.length > 0 ? (
             <HashtagBlogViewer
               blogPath={activeBlogPath}

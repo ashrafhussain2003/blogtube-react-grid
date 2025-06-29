@@ -6,11 +6,17 @@ import SearchBar from '../components/SearchBar';
 import { BlogMeta } from '../types/blog';
 import { sampleBlogs, trendingHashtags } from '../data/sampleBlogs';
 import { Link } from 'react-router-dom';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Eye } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const [blogs, setBlogs] = useState<BlogMeta[]>(sampleBlogs);
   const [loading, setLoading] = useState(false);
+
+  // Get top viewed blogs for the popular section
+  const topViewedBlogs = sampleBlogs
+    .filter(blog => blog.viewCount)
+    .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+    .slice(0, 5);
 
   const handleSearch = (results: BlogMeta[]) => {
     setBlogs(results);
@@ -94,19 +100,35 @@ const HomePage: React.FC = () => {
               <AdBanner type="vertical" />
               
               <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold mb-4 text-black">Popular This Week</h3>
+                <div className="flex items-center gap-2 mb-4">
+                  <Eye className="w-5 h-5 text-black" />
+                  <h3 className="text-lg font-semibold text-black">Most Viewed</h3>
+                </div>
                 <div className="space-y-4">
-                  {sampleBlogs.slice(0, 5).map((blog, index) => (
+                  {topViewedBlogs.map((blog, index) => (
                     <Link
                       key={blog.slug}
                       to={`/blog/${blog.slug}`}
                       className="block hover:bg-gray-50 p-3 rounded transition-colors"
                     >
-                      <div className="text-sm font-medium text-black line-clamp-2">
-                        {blog.title}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {blog.author}
+                      <div className="flex items-start gap-3">
+                        <span className="text-lg font-bold text-gray-400 min-w-[24px]">
+                          {index + 1}
+                        </span>
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-black line-clamp-2 mb-1">
+                            {blog.title}
+                          </div>
+                          <div className="text-xs text-gray-500 mb-1">
+                            {blog.author}
+                          </div>
+                          {blog.viewCount && (
+                            <div className="text-xs text-gray-400 flex items-center gap-1">
+                              <Eye className="w-3 h-3" />
+                              {blog.viewCount.toLocaleString()} views
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   ))}

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types/blog';
 import BlogRenderer from './BlogRenderer';
-import { Clock, User, Calendar } from 'lucide-react';
+import { Clock, User, Calendar, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HashtagBlogViewerProps {
   blogPath: string | null;
@@ -25,45 +26,41 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         // Simulate API call with sample data since we don't have actual JSON files
         const sampleBlog: BlogPost = {
           meta: {
-            title: "Understanding AWS Services",
-            author: "John Doe",
+            title: "Getting Started with React Hooks",
+            author: "Sarah Johnson",
             publishedDate: "2024-01-15",
             readingTime: 8,
-            hashtags: ["aws", "cloud", "technology"],
-            slug: "understanding-aws-services",
-            description: "A comprehensive guide to AWS services and their applications in modern cloud computing."
+            viewCount: 12500,
+            hashtags: ["react", "javascript", "frontend", "hooks"],
+            slug: "getting-started-react-hooks",
+            description: "This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn."
           },
           blocks: [
             {
               type: 'title',
-              content: 'Understanding AWS Services',
+              content: 'Getting Started with React Hooks',
               level: 1
             },
             {
               type: 'text',
-              content: 'Amazon Web Services (AWS) is a comprehensive cloud computing platform that offers a wide range of services to help businesses scale and grow. In this article, we\'ll explore the key services and their applications.'
+              content: 'This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn.'
+            },
+            {
+              type: 'text',
+              content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
             },
             {
               type: 'note',
-              content: 'AWS offers over 200 services across various categories including compute, storage, databases, and more.'
+              content: 'This is an important note that readers should pay attention to. It contains crucial information that enhances understanding.'
             },
             {
               type: 'title',
-              content: 'Core Services Overview',
+              content: 'Key Concepts',
               level: 2
             },
             {
               type: 'text',
-              content: 'Let\'s dive into some of the most important AWS services that form the backbone of many cloud applications.'
-            },
-            {
-              type: 'image',
-              content: '/api/placeholder/600/300',
-              alt: 'AWS Services Overview Diagram'
-            },
-            {
-              type: 'alert',
-              content: 'Always follow AWS best practices for security and cost optimization when deploying services.'
+              content: 'Here we dive deeper into the main concepts. This paragraph provides detailed explanations and examples to help readers understand the topic better.'
             }
           ]
         };
@@ -116,40 +113,66 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
   }
 
   return (
-    <div className="flex-1 max-w-4xl mx-auto p-6 lg:p-8">
-      {/* Blog Meta Information */}
-      <div className="mb-8 pb-6 border-b border-gray-200">
-        <div className="flex items-center gap-6 text-sm text-gray-600 mb-4">
-          <div className="flex items-center gap-1">
-            <User className="w-4 h-4" />
-            <span>{blog.meta.author}</span>
+    <div className="flex-1 bg-white">
+      <div className="max-w-4xl mx-auto">
+        {/* Blog Header */}
+        <div className="px-6 lg:px-8 pt-8 pb-4">
+          {/* Hashtags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {blog.meta.hashtags.map(tag => (
+              <Link
+                key={tag}
+                to={`/hashtag/${tag}`}
+                className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
+              >
+                #{tag}
+              </Link>
+            ))}
           </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            <span>{new Date(blog.meta.publishedDate).toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            <span>{blog.meta.readingTime} min read</span>
+
+          {/* Title */}
+          <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            {blog.meta.title}
+          </h1>
+
+          {/* Meta Information */}
+          <div className="flex items-center gap-6 text-sm text-gray-600 pb-6 border-b border-gray-200">
+            <div className="flex items-center gap-1">
+              <User className="w-4 h-4" />
+              <span>{blog.meta.author}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              <span>{new Date(blog.meta.publishedDate).toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Clock className="w-4 h-4" />
+              <span>{blog.meta.readingTime} min read</span>
+            </div>
+            {blog.meta.viewCount && (
+              <div className="flex items-center gap-1">
+                <Eye className="w-4 h-4" />
+                <span>{blog.meta.viewCount.toLocaleString()} views</span>
+              </div>
+            )}
           </div>
         </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {blog.meta.hashtags.map(tag => (
-            <span
-              key={tag}
-              className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm border border-gray-200"
-            >
-              #{tag}
-            </span>
-          ))}
+
+        {/* Blog Content */}
+        <article className="px-6 lg:px-8 pb-12">
+          <div className="prose prose-lg max-w-none">
+            <BlogRenderer blocks={blog.blocks.slice(1)} />
+          </div>
+        </article>
+
+        {/* Related Articles Sidebar */}
+        <div className="px-6 lg:px-8 pb-8">
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+            <h3 className="text-xl font-semibold mb-2">Related Articles</h3>
+            <p className="text-blue-100">Getting Started with React Hooks</p>
+          </div>
         </div>
       </div>
-
-      {/* Blog Content */}
-      <article className="prose prose-lg max-w-none">
-        <BlogRenderer blocks={blog.blocks} />
-      </article>
     </div>
   );
 };
