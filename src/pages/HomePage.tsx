@@ -38,10 +38,10 @@ const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
+      <header className="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
+            <Link to="/" className="text-2xl font-bold text-gray-900">
               BlogTube
             </Link>
             <div className="flex-1 max-w-2xl mx-8">
@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
             {/* Trending Section */}
             <section className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="w-6 h-6 text-red-500" />
+                <TrendingUp className="w-6 h-6 text-gray-700" />
                 <h2 className="text-2xl font-bold text-gray-900">Trending Hashtags</h2>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -69,7 +69,7 @@ const HomePage: React.FC = () => {
                   <Link
                     key={hashtag.name}
                     to={`/hashtag/${hashtag.name}`}
-                    className="inline-block bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 rounded-full text-sm font-medium transition-colors"
+                    className="inline-block bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium transition-colors border border-gray-300"
                   >
                     #{hashtag.name} ({hashtag.count})
                   </Link>
@@ -77,9 +77,9 @@ const HomePage: React.FC = () => {
               </div>
             </section>
 
-            {/* Blog Grid */}
+            {/* Blog Grid - Changed to 3 columns */}
             <section>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {renderBlogGrid()}
               </div>
               
@@ -96,8 +96,8 @@ const HomePage: React.FC = () => {
             <div className="sticky top-24 space-y-6">
               <AdBanner type="vertical" />
               
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">Popular This Week</h3>
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold mb-4 text-gray-900">Popular This Week</h3>
                 <div className="space-y-3">
                   {sampleBlogs.slice(0, 5).map((blog, index) => (
                     <Link
@@ -109,7 +109,7 @@ const HomePage: React.FC = () => {
                         {blog.title}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
-                        {blog.viewCount?.toLocaleString()} views
+                        {blog.author}
                       </div>
                     </Link>
                   ))}

@@ -26,28 +26,31 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
   ]);
   
   const [newComment, setNewComment] = useState('');
+  const [commenterName, setCommenterName] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const [replyName, setReplyName] = useState('');
 
   const addComment = () => {
-    if (newComment.trim()) {
+    if (newComment.trim() && commenterName.trim()) {
       const comment: Comment = {
         id: Date.now().toString(),
-        author: 'Anonymous User',
+        author: commenterName,
         content: newComment,
         timestamp: new Date().toISOString(),
         replies: []
       };
       setComments([...comments, comment]);
       setNewComment('');
+      setCommenterName('');
     }
   };
 
   const addReply = (parentId: string) => {
-    if (replyContent.trim()) {
+    if (replyContent.trim() && replyName.trim()) {
       const reply: Comment = {
         id: Date.now().toString(),
-        author: 'Anonymous User',
+        author: replyName,
         content: replyContent,
         timestamp: new Date().toISOString()
       };
@@ -63,6 +66,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
       }));
       
       setReplyContent('');
+      setReplyName('');
       setReplyingTo(null);
     }
   };
@@ -95,7 +99,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
 
   const renderComment = (comment: Comment, isReply: boolean = false) => (
     <div key={comment.id} className={`${isReply ? 'ml-8 border-l-2 border-gray-200 pl-4' : ''} mb-4`}>
-      <div className="bg-gray-50 rounded-lg p-4">
+      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <User className="w-5 h-5 text-gray-400" />
@@ -103,12 +107,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
             <span className="text-sm text-gray-500">{formatDate(comment.timestamp)}</span>
           </div>
           <div className="flex gap-2">
-            <button className="text-gray-400 hover:text-blue-500 transition-colors">
+            <button className="text-gray-400 hover:text-gray-600 transition-colors">
               <Edit2 className="w-4 h-4" />
             </button>
             <button 
               onClick={() => deleteComment(comment.id)}
-              className="text-gray-400 hover:text-red-500 transition-colors"
+              className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -120,7 +124,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
         {!isReply && (
           <button
             onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-            className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 transition-colors"
+            className="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
             Reply
@@ -128,18 +132,25 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
         )}
         
         {replyingTo === comment.id && (
-          <div className="mt-3 p-3 bg-white rounded border">
+          <div className="mt-3 p-3 bg-white rounded border border-gray-300">
+            <input
+              type="text"
+              value={replyName}
+              onChange={(e) => setReplyName(e.target.value)}
+              placeholder="Your name"
+              className="w-full p-2 mb-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+            />
             <textarea
               value={replyContent}
               onChange={(e) => setReplyContent(e.target.value)}
               placeholder="Write a reply..."
-              className="w-full p-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-gray-400"
               rows={3}
             />
             <div className="flex gap-2 mt-2">
               <button
                 onClick={() => addReply(comment.id)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
               >
                 Reply
               </button>
@@ -147,6 +158,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
                 onClick={() => {
                   setReplyingTo(null);
                   setReplyContent('');
+                  setReplyName('');
                 }}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
               >
@@ -167,22 +179,29 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogSlug }) => {
 
   return (
     <div className="mt-8">
-      <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+      <h3 className="text-2xl font-semibold mb-6 flex items-center gap-2 text-gray-900">
         <MessageCircle className="w-6 h-6" />
         Comments ({comments.length})
       </h3>
       
       <div className="mb-6">
+        <input
+          type="text"
+          value={commenterName}
+          onChange={(e) => setCommenterName(e.target.value)}
+          placeholder="Your name"
+          className="w-full p-3 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+        />
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Share your thoughts..."
-          className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-gray-400"
           rows={4}
         />
         <button
           onClick={addComment}
-          className="mt-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="mt-2 px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
         >
           Post Comment
         </button>
