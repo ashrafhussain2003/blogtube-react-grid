@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types/blog';
 import BlogRenderer from './BlogRenderer';
+import CommentSection from './CommentSection';
 import AdBanner from './AdBanner';
 import { Clock, User, Calendar, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -23,7 +24,7 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
     if (!hashtag) return [];
     return sampleBlogs
       .filter(b => b.hashtags.includes(hashtag.toLowerCase()))
-      .slice(0, 8);
+      .slice(0, 4);
   };
 
   const relatedBlogs = getRelatedBlogs();
@@ -73,7 +74,16 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
             },
             {
               type: 'text',
-              content: 'Here we dive deeper into the main concepts. This paragraph provides detailed explanations and examples to help readers understand the topic better.'
+              content: 'Here we dive deeper into the main concepts. This paragraph provides detailed explanations and examples that help readers understand the topic better.'
+            },
+            {
+              type: 'image',
+              content: '/api/placeholder/800/400',
+              alt: 'Illustration of key concepts discussed in the article'
+            },
+            {
+              type: 'text',
+              content: 'Following the visual representation above, we can see how these concepts apply in real-world scenarios. The implementation details are crucial for practical application.'
             }
           ]
         };
@@ -128,81 +138,83 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
     <div className="flex bg-white">
       {/* Main Content */}
       <div className="flex-1 max-w-4xl">
-        {/* Blog Header */}
-        <div className="px-6 lg:px-8 pt-8 pb-4">
-          {/* Hashtags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {blog.meta.hashtags.map(tag => (
-              <Link
-                key={tag}
-                to={`/hashtag/${tag}`}
-                className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
-              >
-                #{tag}
-              </Link>
-            ))}
-          </div>
-
-          {/* Title */}
-          <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
-            {blog.meta.title}
-          </h1>
-
-          {/* Meta Information */}
-          <div className="flex items-center gap-6 text-sm text-gray-600 pb-6 border-b border-gray-200">
-            <div className="flex items-center gap-1">
-              <User className="w-4 h-4" />
-              <span>{blog.meta.author}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>{new Date(blog.meta.publishedDate).toLocaleDateString()}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{blog.meta.readingTime} min read</span>
-            </div>
-            {blog.meta.viewCount && (
-              <div className="flex items-center gap-1">
-                <Eye className="w-4 h-4" />
-                <span>{blog.meta.viewCount.toLocaleString()} views</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Blog Content */}
-        <article className="px-6 lg:px-8 pb-12">
-          <div className="prose prose-lg max-w-none">
-            <BlogRenderer blocks={blog.blocks.slice(1)} />
-          </div>
-        </article>
-
-        {/* Related Articles Section */}
-        <div className="px-6 lg:px-8 pb-8">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white mb-8">
-            <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {relatedBlogs.slice(0, 4).map(relatedBlog => (
+        <article className="bg-white">
+          {/* Article Header */}
+          <div className="p-8 border-b border-gray-200">
+            <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+              {blog.meta.hashtags.map(tag => (
                 <Link
-                  key={relatedBlog.slug}
-                  to={`/blog/${relatedBlog.slug}`}
-                  className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                  key={tag}
+                  to={`/hashtag/${tag}`}
+                  className="bg-blue-100 text-blue-600 px-2 py-1 rounded hover:bg-blue-200 transition-colors"
                 >
-                  <h4 className="font-medium text-white mb-2 line-clamp-2">
-                    {relatedBlog.title}
-                  </h4>
-                  <div className="flex items-center gap-2 text-blue-100 text-sm">
-                    <User className="w-3 h-3" />
-                    <span>{relatedBlog.author}</span>
-                    <span>•</span>
-                    <span>{relatedBlog.readingTime} min</span>
-                  </div>
+                  #{tag}
                 </Link>
               ))}
             </div>
+            
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              {blog.meta.title}
+            </h1>
+            
+            <div className="flex items-center gap-6 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                <span className="font-medium">{blog.meta.author}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date(blog.meta.publishedDate).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>{blog.meta.readingTime} min read</span>
+              </div>
+              {blog.meta.viewCount && (
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  <span>{blog.meta.viewCount.toLocaleString()} views</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* Article Content */}
+          <div className="p-8">
+            <BlogRenderer blocks={blog.blocks.slice(1)} />
+          </div>
+
+          {/* Related Articles Section */}
+          <div className="px-8 pb-8">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+              <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {relatedBlogs.map(relatedBlog => (
+                  <Link
+                    key={relatedBlog.slug}
+                    to={`/blog/${relatedBlog.slug}`}
+                    className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                  >
+                    <h4 className="font-medium text-white mb-2 line-clamp-2">
+                      {relatedBlog.title}
+                    </h4>
+                    <div className="flex items-center gap-2 text-blue-100 text-sm">
+                      <User className="w-3 h-3" />
+                      <span>{relatedBlog.author}</span>
+                      <span>•</span>
+                      <span>{relatedBlog.readingTime} min</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className="px-8 pb-8">
+            <CommentSection blogSlug={blog.meta.slug} />
+          </div>
+        </article>
       </div>
 
       {/* Right Sidebar - Advertisements */}
@@ -210,30 +222,6 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         <AdBanner type="vertical" className="mb-6" />
         <AdBanner type="square" className="mb-6" />
         <AdBanner type="square" className="mb-6" />
-        
-        {/* Additional Related Blogs */}
-        {relatedBlogs.length > 4 && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-semibold text-gray-900 mb-4">More on {hashtag}</h4>
-            <div className="space-y-3">
-              {relatedBlogs.slice(4, 8).map(blog => (
-                <Link
-                  key={blog.slug}
-                  to={`/blog/${blog.slug}`}
-                  className="block hover:bg-white p-2 rounded transition-colors"
-                >
-                  <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
-                    {blog.title}
-                  </div>
-                  <div className="text-xs text-gray-500 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {blog.readingTime} min read
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </aside>
     </div>
   );

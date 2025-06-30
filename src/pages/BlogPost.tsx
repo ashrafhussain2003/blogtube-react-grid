@@ -12,7 +12,7 @@ const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [blog, setBlog] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [relatedBlogs, setRelatedBlogs] = useState(sampleBlogs.slice(0, 5));
+  const [relatedBlogs, setRelatedBlogs] = useState(sampleBlogs.slice(0, 4));
 
   useEffect(() => {
     const loadBlog = async () => {
@@ -189,52 +189,46 @@ const BlogPost: React.FC = () => {
               {/* Article Content */}
               <div className="p-8">
                 <BlogRenderer blocks={blog.blocks} />
-                
-                {/* Ad after 2nd paragraph */}
-                <div className="my-8">
-                  <AdBanner type="horizontal" />
-                </div>
               </div>
-            </article>
 
-            {/* Comments */}
-            <div className="bg-white rounded-lg shadow-md mt-8 p-8">
-              <CommentSection blogSlug={blog.meta.slug} />
-            </div>
-          </main>
-
-          {/* Sidebar */}
-          <aside className="hidden lg:block w-80">
-            <div className="sticky top-24 space-y-6">
-              <AdBanner type="vertical" />
-              
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">Related Articles</h3>
-                <div className="space-y-4">
-                  {relatedBlogs.map((relatedBlog) => (
-                    <Link
-                      key={relatedBlog.slug}
-                      to={`/blog/${relatedBlog.slug}`}
-                      className="block group"
-                    >
-                      <div className="w-full h-32 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-lg mb-2 flex items-center justify-center">
-                        <h4 className="text-white text-sm font-medium text-center px-2 line-clamp-2">
+              {/* Related Articles Section */}
+              <div className="px-8 pb-8">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+                  <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {relatedBlogs.map(relatedBlog => (
+                      <Link
+                        key={relatedBlog.slug}
+                        to={`/blog/${relatedBlog.slug}`}
+                        className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                      >
+                        <h4 className="font-medium text-white mb-2 line-clamp-2">
                           {relatedBlog.title}
                         </h4>
-                      </div>
-                      <div className="text-sm">
-                        <p className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                          {relatedBlog.title}
-                        </p>
-                        <p className="text-gray-500 text-xs mt-1">
-                          {relatedBlog.author} • {relatedBlog.readingTime} min read
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+                        <div className="flex items-center gap-2 text-blue-100 text-sm">
+                          <User className="w-3 h-3" />
+                          <span>{relatedBlog.author}</span>
+                          <span>•</span>
+                          <span>{relatedBlog.readingTime} min</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+
+              {/* Comments Section */}
+              <div className="px-8 pb-8">
+                <CommentSection blogSlug={blog.meta.slug} />
+              </div>
+            </article>
+          </main>
+
+          {/* Right Sidebar - Advertisements */}
+          <aside className="w-80 flex-shrink-0 space-y-6">
+            <AdBanner type="vertical" />
+            <AdBanner type="square" />
+            <AdBanner type="square" />
           </aside>
         </div>
       </div>
