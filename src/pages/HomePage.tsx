@@ -1,7 +1,6 @@
-
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Hash, TrendingUp, Eye, Clock, User, Calendar, Brain, Monitor, Code, Gear, Cloud, Database, Smartphone, Palette } from 'lucide-react';
+import { Hash, TrendingUp, Eye, Clock, User, Calendar, Brain, Monitor, Code, Settings, Cloud, Database, Smartphone, Palette } from 'lucide-react';
 import BlogCard from '../components/BlogCard';
 import SearchBar from '../components/SearchBar';
 import ProfileModal from '../components/ProfileModal';
@@ -61,7 +60,7 @@ const HomePage: React.FC = () => {
       case 'devops':
       case 'docker':
       case 'kubernetes':
-        return Gear;
+        return Settings;
       default:
         return Hash;
     }
