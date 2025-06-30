@@ -1,12 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { BlogPost as BlogPostType } from '../types/blog';
 import { sampleBlogs } from '../data/sampleBlogs';
 import BlogRenderer from '../components/BlogRenderer';
 import CommentSection from '../components/CommentSection';
 import AdBanner from '../components/AdBanner';
-import { ArrowLeft, Clock, Eye, User, Calendar } from 'lucide-react';
+import Navigation from '../components/Navigation';
+import { Clock, Eye, User, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -108,13 +109,6 @@ const BlogPost: React.FC = () => {
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Blog Not Found</h1>
           <p className="text-gray-600 mb-6">The blog post you're looking for doesn't exist.</p>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </Link>
         </div>
       </div>
     );
@@ -122,24 +116,11 @@ const BlogPost: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link
-              to="/"
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Blogs</span>
-            </Link>
-            <Link to="/" className="text-2xl font-bold text-blue-600">
-              BlogTube
-            </Link>
-            <div className="w-24"></div>
-          </div>
-        </div>
-      </header>
+      <Navigation 
+        showBackButton={true}
+        backLink="/"
+        backText="Back to Blogs"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">

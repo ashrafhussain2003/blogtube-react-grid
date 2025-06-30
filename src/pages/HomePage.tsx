@@ -1,150 +1,143 @@
-
-import React, { useState, useEffect } from 'react';
-import BlogCard from '../components/BlogCard';
-import AdBanner from '../components/AdBanner';
-import SearchBar from '../components/SearchBar';
-import { BlogMeta } from '../types/blog';
-import { sampleBlogs, trendingHashtags } from '../data/sampleBlogs';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Eye } from 'lucide-react';
+import { Hash, TrendingUp, Eye, Clock, User, Calendar } from 'lucide-react';
+import BlogCard from '../components/BlogCard';
+import SearchBar from '../components/SearchBar';
+import Navigation from '../components/Navigation';
+import { sampleBlogs } from '../data/sampleBlogs';
 
 const HomePage: React.FC = () => {
-  const [blogs, setBlogs] = useState<BlogMeta[]>(sampleBlogs);
-  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Get top viewed blogs for the popular section
-  const topViewedBlogs = sampleBlogs
-    .filter(blog => blog.viewCount)
-    .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
-    .slice(0, 5);
+  const filteredBlogs = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+    return sampleBlogs.filter(blog =>
+      blog.title.toLowerCase().includes(term) ||
+      blog.description.toLowerCase().includes(term) ||
+      blog.author.toLowerCase().includes(term) ||
+      blog.hashtags.some(tag => tag.toLowerCase().includes(term))
+    );
+  }, [searchTerm]);
 
-  const handleSearch = (results: BlogMeta[]) => {
-    setBlogs(results);
-  };
+  const topViewedBlogs = useMemo(() => {
+    return [...sampleBlogs]
+      .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
+      .slice(0, 3);
+  }, []);
 
-  const renderBlogGrid = () => {
-    const items = [];
-    for (let i = 0; i < blogs.length; i++) {
-      items.push(
-        <BlogCard key={blogs[i].slug} blog={blogs[i]} />
-      );
-      
-      // Add ad banner after every 6th blog (3 rows of 2)
-      if ((i + 1) % 6 === 0 && i < blogs.length - 1) {
-        items.push(
-          <div key={`ad-${i}`} className="col-span-full my-8">
-            <AdBanner type="horizontal" />
-          </div>
-        );
-      }
-    }
-    return items;
-  };
+  const allHashtags = useMemo(() => {
+    const hashtagMap: { [key: string]: number } = {};
+    sampleBlogs.forEach(blog => {
+      blog.hashtags.forEach(tag => {
+        const lowerTag = tag.toLowerCase();
+        hashtagMap[lowerTag] = (hashtagMap[lowerTag] || 0) + 1;
+      });
+    });
+
+    return Object.entries(hashtagMap)
+      .map(([hashtag, count]) => ({ hashtag, count }))
+      .sort((a, b) => b.count - a.count);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="text-2xl font-bold text-black">
-              BlogTube
-            </Link>
-            <div className="flex-1 max-w-xl mx-8">
-              <SearchBar onSearch={handleSearch} />
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <Navigation showBackButton={false} />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold text-gray-900 mb-4">
+            Welcome to <span className="text-blue-600">BlogTube</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8">
+            Discover amazing content across various topics
+          </p>
+          <SearchBar onSearch={setSearchTerm} />
+        </div>
+
+        {/* Most Viewed Section */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <TrendingUp className="w-6 h-6 text-red-500" />
+            <h2 className="text-2xl font-bold text-gray-900">Most Viewed</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topViewedBlogs.map(blog => (
+              <Link
+                key={blog.slug}
+                to={`/blog/${blog.slug}`}
+                className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+              >
+                <div className="p-6">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                    {blog.hashtags.slice(0, 2).map(tag => (
+                      <span key={tag} className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                    {blog.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                    {blog.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        <span>{blog.author}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>{blog.readingTime}min</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-red-500">
+                      <Eye className="w-3 h-3" />
+                      <span>{blog.viewCount?.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
-      </header>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex gap-12">
-          {/* Main Content */}
-          <main className="flex-1">
-            {/* Trending Section */}
-            <section className="mb-12">
-              <div className="flex items-center gap-2 mb-6">
-                <TrendingUp className="w-5 h-5 text-black" />
-                <h2 className="text-xl font-semibold text-black">Trending</h2>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {trendingHashtags.map(hashtag => (
-                  <Link
-                    key={hashtag.name}
-                    to={`/hashtag/${hashtag.name}`}
-                    className="inline-block bg-gray-100 hover:bg-gray-200 text-black px-3 py-1.5 rounded-full text-sm transition-colors border border-gray-200"
-                  >
-                    #{hashtag.name} ({hashtag.count})
-                  </Link>
-                ))}
-              </div>
-            </section>
+        {/* Hashtags Section */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <Hash className="w-6 h-6 text-blue-600" />
+            <h2 className="text-2xl font-bold text-gray-900">Browse by Topics</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {allHashtags.map(({ hashtag, count }) => (
+              <Link
+                key={hashtag}
+                to={`/hashtag/${hashtag}`}
+                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 text-center border border-gray-200 hover:border-blue-300"
+              >
+                <div className="text-3xl mb-2">📚</div>
+                <h3 className="font-semibold text-gray-900 mb-1">#{hashtag}</h3>
+                <p className="text-sm text-gray-600">{count} articles</p>
+              </Link>
+            ))}
+          </div>
+        </div>
 
-            {/* Blog Grid - 2 columns with more spacing */}
-            <section>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {renderBlogGrid()}
-              </div>
-              
-              {blogs.length === 0 && (
-                <div className="text-center py-16">
-                  <p className="text-gray-500 text-lg">No blogs found matching your search.</p>
-                </div>
-              )}
-            </section>
-          </main>
-
-          {/* Sidebar */}
-          <aside className="hidden xl:block w-80">
-            <div className="sticky top-24 space-y-8">
-              <AdBanner type="vertical" />
-              
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Eye className="w-5 h-5 text-black" />
-                  <h3 className="text-lg font-semibold text-black">Most Viewed</h3>
-                </div>
-                <div className="space-y-4">
-                  {topViewedBlogs.map((blog, index) => (
-                    <Link
-                      key={blog.slug}
-                      to={`/blog/${blog.slug}`}
-                      className="block hover:bg-gray-50 p-3 rounded transition-colors"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className="text-lg font-bold text-gray-400 min-w-[24px]">
-                          {index + 1}
-                        </span>
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-black line-clamp-2 mb-1">
-                            {blog.title}
-                          </div>
-                          <div className="text-xs text-gray-500 mb-1">
-                            {blog.author}
-                          </div>
-                          {blog.viewCount && (
-                            <div className="text-xs text-gray-400 flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {blog.viewCount.toLocaleString()} views
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </aside>
+        {/* All Blogs Section */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">All Blogs</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBlogs.map(blog => (
+              <BlogCard key={blog.slug} blog={blog} />
+            ))}
+          </div>
         </div>
       </div>
-
-      {/* Footer Ad */}
-      <footer className="bg-white border-t border-gray-200 py-8 mt-16">
-        <div className="max-w-6xl mx-auto px-6">
-          <AdBanner type="horizontal" />
-        </div>
-      </footer>
     </div>
   );
 };

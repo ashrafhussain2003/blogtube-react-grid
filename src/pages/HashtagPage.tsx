@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Hash } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { Hash, ArrowLeft } from 'lucide-react';
 import FolderTreeSidebar from '../components/FolderTreeSidebar';
 import HashtagBlogViewer from '../components/HashtagBlogViewer';
+import Navigation from '../components/Navigation';
 import { FolderNode } from '../types/folderTree';
 import folderTreeData from '../data/folderTree.json';
 
@@ -64,35 +64,21 @@ const HashtagPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link
-                to="/"
-                className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Blogs</span>
-              </Link>
-              <div className="flex items-center gap-2">
-                <Hash className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-bold text-gray-900">
-                  {hashtag}
-                </h1>
-              </div>
-            </div>
-            <Link to="/" className="text-xl font-bold text-black">
-              BlogTube
-            </Link>
+      <Navigation 
+        showBackButton={true}
+        backLink="/"
+        backText="Blogs"
+        title={
+          <div className="flex items-center gap-2">
+            <Hash className="w-6 h-6 text-blue-600" />
+            <span>{hashtag}</span>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <div className="flex">
         {/* Static Sidebar */}
-        <div className="w-80 flex-shrink-0">
+        <div className="w-80 flex-shrink-0 bg-gray-50">
           <FolderTreeSidebar
             tree={tree}
             activeSlug={activeSlug}
@@ -120,13 +106,6 @@ const HashtagPage: React.FC = () => {
                 <p className="text-gray-500 mb-6">
                   There are no organized topics for #{hashtag} yet.
                 </p>
-                <Link
-                  to="/"
-                  className="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Explore All Blogs
-                </Link>
               </div>
             </div>
           )}
