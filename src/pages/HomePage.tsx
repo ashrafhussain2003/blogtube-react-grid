@@ -1,16 +1,18 @@
 
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Hash, TrendingUp, Eye, Clock, User, Calendar } from 'lucide-react';
+import { Hash, TrendingUp, Eye, Clock, User, Calendar, Brain, Monitor, Code, Gear, Cloud, Database, Smartphone, Palette } from 'lucide-react';
 import BlogCard from '../components/BlogCard';
 import SearchBar from '../components/SearchBar';
-import Navigation from '../components/Navigation';
+import ProfileModal from '../components/ProfileModal';
+import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { sampleBlogs } from '../data/sampleBlogs';
 import { BlogMeta } from '../types/blog';
 
 const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredBlogs, setFilteredBlogs] = useState(sampleBlogs);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleSearch = (results: BlogMeta[]) => {
     setFilteredBlogs(results);
@@ -21,6 +23,49 @@ const HomePage: React.FC = () => {
       .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
       .slice(0, 3);
   }, []);
+
+  const getTopicIcon = (hashtag: string) => {
+    const topic = hashtag.toLowerCase();
+    switch (topic) {
+      case 'javascript':
+      case 'react':
+      case 'vue':
+      case 'angular':
+      case 'frontend':
+        return Monitor;
+      case 'backend':
+      case 'api':
+      case 'nodejs':
+        return Code;
+      case 'ml':
+      case 'ai':
+      case 'machinelearning':
+        return Brain;
+      case 'aws':
+      case 'azure':
+      case 'gcp':
+      case 'cloud':
+        return Cloud;
+      case 'database':
+      case 'sql':
+      case 'mongodb':
+        return Database;
+      case 'mobile':
+      case 'android':
+      case 'ios':
+        return Smartphone;
+      case 'design':
+      case 'ui':
+      case 'ux':
+        return Palette;
+      case 'devops':
+      case 'docker':
+      case 'kubernetes':
+        return Gear;
+      default:
+        return Hash;
+    }
+  };
 
   const allHashtags = useMemo(() => {
     const hashtagMap: { [key: string]: number } = {};
@@ -38,18 +83,33 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation showBackButton={false} />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 relative">
+          {/* Avatar in top right corner */}
+          <div className="absolute top-0 right-0">
+            <button
+              onClick={() => setIsProfileOpen(true)}
+              className="rounded-full hover:ring-2 hover:ring-blue-200 transition-all"
+            >
+              <Avatar className="w-10 h-10">
+                <AvatarImage src="/lovable-uploads/9a90d753-14e1-45e1-8848-b1a046b78ce5.png" alt="Profile" />
+                <AvatarFallback>MAH</AvatarFallback>
+              </Avatar>
+            </button>
+          </div>
+
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
             Welcome to <span className="text-blue-600">BlogTube</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Discover amazing content across various topics
           </p>
-          <SearchBar onSearch={handleSearch} />
+          
+          {/* Centered Search Bar */}
+          <div className="flex justify-center">
+            <SearchBar onSearch={handleSearch} />
+          </div>
         </div>
 
         {/* Most Viewed Section */}
@@ -60,46 +120,7 @@ const HomePage: React.FC = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topViewedBlogs.map(blog => (
-              <Link
-                key={blog.slug}
-                to={`/blog/${blog.slug}`}
-                className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
-              >
-                <div className="p-6">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-                    {blog.hashtags.slice(0, 2).map(tag => (
-                      <span key={tag} className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                    {blog.title}
-                  </h3>
-                  
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {blog.description}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        <span>{blog.author}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        <span>{blog.readingTime}min</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-red-500">
-                      <Eye className="w-3 h-3" />
-                      <span>{blog.viewCount?.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <BlogCard key={blog.slug} blog={blog} />
             ))}
           </div>
         </div>
@@ -110,18 +131,26 @@ const HomePage: React.FC = () => {
             <Hash className="w-6 h-6 text-blue-600" />
             <h2 className="text-2xl font-bold text-gray-900">Browse by Topics</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {allHashtags.map(({ hashtag, count }) => (
-              <Link
-                key={hashtag}
-                to={`/hashtag/${hashtag}`}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 text-center border border-gray-200 hover:border-blue-300"
-              >
-                <div className="text-3xl mb-2">📚</div>
-                <h3 className="font-semibold text-gray-900 mb-1">#{hashtag}</h3>
-                <p className="text-sm text-gray-600">{count} articles</p>
-              </Link>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {allHashtags.map(({ hashtag, count }) => {
+              const IconComponent = getTopicIcon(hashtag);
+              return (
+                <BlogCard
+                  key={hashtag}
+                  blog={{
+                    title: `#${hashtag}`,
+                    description: `${count} articles`,
+                    author: 'Various Authors',
+                    publishedDate: new Date().toISOString(),
+                    readingTime: 0,
+                    hashtags: [hashtag],
+                    slug: hashtag,
+                    viewCount: count
+                  }}
+                  className="cursor-pointer"
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -135,6 +164,11 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ProfileModal 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+      />
     </div>
   );
 };

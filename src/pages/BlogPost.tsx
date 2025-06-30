@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { BlogPost as BlogPostType } from '../types/blog';
@@ -28,11 +29,6 @@ const BlogPost: React.FC = () => {
             meta: blogMeta,
             blocks: [
               {
-                type: 'title',
-                content: blogMeta.title,
-                level: 1
-              },
-              {
                 type: 'text',
                 content: 'This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn.'
               },
@@ -43,11 +39,6 @@ const BlogPost: React.FC = () => {
               {
                 type: 'note',
                 content: 'This is an important note that readers should pay attention to. It contains crucial information that enhances understanding.'
-              },
-              {
-                type: 'title',
-                content: 'Key Concepts',
-                level: 2
               },
               {
                 type: 'text',
@@ -65,11 +56,6 @@ const BlogPost: React.FC = () => {
               {
                 type: 'alert',
                 content: 'Warning: Make sure to follow best practices when implementing these concepts to avoid common pitfalls and security issues.'
-              },
-              {
-                type: 'title',
-                content: 'Advanced Techniques',
-                level: 2
               },
               {
                 type: 'text',
@@ -205,11 +191,14 @@ const BlogPost: React.FC = () => {
             </article>
           </main>
 
-          {/* Right Sidebar - Advertisements */}
-          <aside className="w-80 flex-shrink-0 space-y-6">
+          {/* Right Sidebar - More Advertisements */}
+          <aside className="w-80 flex-shrink-0 space-y-4">
             <AdBanner type="vertical" />
             <AdBanner type="square" />
             <AdBanner type="square" />
+            <AdBanner type="horizontal" />
+            <AdBanner type="square" />
+            <AdBanner type="vertical" />
           </aside>
         </div>
       </div>

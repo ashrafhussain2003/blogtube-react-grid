@@ -10,21 +10,8 @@ const BlogRenderer: React.FC<BlogRendererProps> = ({ blocks }) => {
   const renderBlock = (block: BlogBlock, index: number) => {
     switch (block.type) {
       case 'title':
-        const HeadingTag = `h${block.level || 1}` as keyof JSX.IntrinsicElements;
-        const headingClasses = {
-          1: 'text-4xl font-bold mb-6 text-gray-900',
-          2: 'text-3xl font-semibold mb-4 text-gray-900',
-          3: 'text-2xl font-semibold mb-3 text-gray-900',
-          4: 'text-xl font-semibold mb-2 text-gray-900',
-          5: 'text-lg font-semibold mb-2 text-gray-900',
-          6: 'text-base font-semibold mb-2 text-gray-900'
-        };
-        
-        return (
-          <HeadingTag key={index} className={headingClasses[block.level as keyof typeof headingClasses] || headingClasses[1]}>
-            {block.content}
-          </HeadingTag>
-        );
+        // Skip rendering title blocks as they're handled in the header
+        return null;
 
       case 'text':
         return (

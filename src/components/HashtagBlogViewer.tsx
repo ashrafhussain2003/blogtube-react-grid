@@ -51,11 +51,6 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
           },
           blocks: [
             {
-              type: 'title',
-              content: 'Getting Started with React Hooks',
-              level: 1
-            },
-            {
               type: 'text',
               content: 'This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn.'
             },
@@ -66,11 +61,6 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
             {
               type: 'note',
               content: 'This is an important note that readers should pay attention to. It contains crucial information that enhances understanding.'
-            },
-            {
-              type: 'title',
-              content: 'Key Concepts',
-              level: 2
             },
             {
               type: 'text',
@@ -181,7 +171,7 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
 
           {/* Article Content */}
           <div className="p-8">
-            <BlogRenderer blocks={blog.blocks.slice(1)} />
+            <BlogRenderer blocks={blog.blocks} />
           </div>
 
           {/* Related Articles Section */}
@@ -217,11 +207,15 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         </article>
       </div>
 
-      {/* Right Sidebar - Advertisements */}
-      <aside className="w-80 flex-shrink-0 p-6 space-y-6">
-        <AdBanner type="vertical" className="mb-6" />
-        <AdBanner type="square" className="mb-6" />
-        <AdBanner type="square" className="mb-6" />
+      {/* Right Sidebar - More Advertisements */}
+      <aside className="w-80 flex-shrink-0 p-6 space-y-4">
+        <AdBanner type="vertical" />
+        <AdBanner type="square" />
+        <AdBanner type="square" />
+        <AdBanner type="horizontal" />
+        <AdBanner type="square" />
+        <AdBanner type="vertical" />
+        <AdBanner type="square" />
       </aside>
     </div>
   );
