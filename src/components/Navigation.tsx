@@ -8,7 +8,7 @@ interface NavigationProps {
   showBackButton?: boolean;
   backLink?: string;
   backText?: string;
-  title?: string;
+  title?: string | React.ReactNode;
   showAvatar?: boolean;
 }
 

@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Hash, TrendingUp, Eye, Clock, User, Calendar } from 'lucide-react';
@@ -5,19 +6,15 @@ import BlogCard from '../components/BlogCard';
 import SearchBar from '../components/SearchBar';
 import Navigation from '../components/Navigation';
 import { sampleBlogs } from '../data/sampleBlogs';
+import { BlogMeta } from '../types/blog';
 
 const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [filteredBlogs, setFilteredBlogs] = useState(sampleBlogs);
 
-  const filteredBlogs = useMemo(() => {
-    const term = searchTerm.toLowerCase();
-    return sampleBlogs.filter(blog =>
-      blog.title.toLowerCase().includes(term) ||
-      blog.description.toLowerCase().includes(term) ||
-      blog.author.toLowerCase().includes(term) ||
-      blog.hashtags.some(tag => tag.toLowerCase().includes(term))
-    );
-  }, [searchTerm]);
+  const handleSearch = (results: BlogMeta[]) => {
+    setFilteredBlogs(results);
+  };
 
   const topViewedBlogs = useMemo(() => {
     return [...sampleBlogs]
@@ -52,7 +49,7 @@ const HomePage: React.FC = () => {
           <p className="text-xl text-gray-600 mb-8">
             Discover amazing content across various topics
           </p>
-          <SearchBar onSearch={setSearchTerm} />
+          <SearchBar onSearch={handleSearch} />
         </div>
 
         {/* Most Viewed Section */}
