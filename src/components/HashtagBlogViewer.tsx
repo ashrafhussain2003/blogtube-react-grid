@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types/blog';
 import BlogRenderer from './BlogRenderer';
@@ -207,14 +206,15 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         </article>
       </div>
 
-      {/* Right Sidebar - More Advertisements */}
+      {/* Right Sidebar - Standardized Advertisement Sizes */}
       <aside className="w-80 flex-shrink-0 p-6 space-y-4">
-        <AdBanner type="vertical" />
         <AdBanner type="square" />
         <AdBanner type="square" />
         <AdBanner type="horizontal" />
         <AdBanner type="square" />
-        <AdBanner type="vertical" />
+        <AdBanner type="horizontal" />
+        <AdBanner type="square" />
+        <AdBanner type="horizontal" />
         <AdBanner type="square" />
       </aside>
     </div>

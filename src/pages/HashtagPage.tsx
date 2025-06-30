@@ -1,11 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hash, ArrowLeft } from 'lucide-react';
-import FolderTreeSidebar from '../components/FolderTreeSidebar';
 import HashtagBlogViewer from '../components/HashtagBlogViewer';
 import Navigation from '../components/Navigation';
 import { FolderNode } from '../types/folderTree';
 import folderTreeData from '../data/folderTree.json';
+import { SidebarProvider, SidebarTrigger } from '../components/ui/sidebar';
+import { HashtagSidebar } from '../components/HashtagSidebar';
 
 const HashtagPage: React.FC = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
@@ -63,55 +65,48 @@ const HashtagPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation 
-        showBackButton={true}
-        backLink="/"
-        backText="Blogs"
-        title={
-          <div className="flex items-center gap-2">
-            <Hash className="w-6 h-6 text-blue-600" />
-            <span>{hashtag}</span>
-          </div>
-        }
-      />
-
-      <div className="flex">
-        {/* Static Sidebar */}
-        <div className="w-80 flex-shrink-0 bg-gray-50">
-          <FolderTreeSidebar
-            tree={tree}
-            activeSlug={activeSlug}
-            onBlogSelect={handleBlogSelect}
-            isOpen={true}
-            onToggle={() => {}}
-          />
-        </div>
-
-        {/* Main Content */}
-        <main className="flex-1">
-          {tree.length > 0 ? (
-            <HashtagBlogViewer
-              blogPath={activeBlogPath}
-              isLoading={loading}
-              hashtag={hashtag}
-            />
-          ) : (
-            <div className="flex-1 flex items-center justify-center p-8">
-              <div className="text-center">
-                <Hash className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-                  No topics found
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  There are no organized topics for #{hashtag} yet.
-                </p>
-              </div>
+    <SidebarProvider>
+      <div className="min-h-screen w-full flex">
+        <HashtagSidebar 
+          tree={tree}
+          activeSlug={activeSlug}
+          onBlogSelect={handleBlogSelect}
+          hashtag={hashtag || ''}
+        />
+        
+        <div className="flex-1 flex flex-col">
+          <header className="h-12 flex items-center border-b bg-white px-4">
+            <SidebarTrigger className="mr-4" />
+            <div className="flex items-center gap-2">
+              <Hash className="w-5 h-5 text-blue-600" />
+              <span className="font-semibold">{hashtag}</span>
             </div>
-          )}
-        </main>
+          </header>
+
+          <main className="flex-1">
+            {tree.length > 0 ? (
+              <HashtagBlogViewer
+                blogPath={activeBlogPath}
+                isLoading={loading}
+                hashtag={hashtag}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center p-8">
+                <div className="text-center">
+                  <Hash className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+                    No topics found
+                  </h2>
+                  <p className="text-gray-500 mb-6">
+                    There are no organized topics for #{hashtag} yet.
+                  </p>
+                </div>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 

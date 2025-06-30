@@ -12,9 +12,20 @@ const AdBanner: React.FC<AdBannerProps> = ({ type = 'horizontal', className = ''
       case 'vertical':
         return 'h-96 w-full';
       case 'square':
-        return 'h-64 w-64';
+        return 'h-48 w-full'; // Standardized square size
       default:
-        return 'h-24 w-full';
+        return 'h-24 w-full'; // Standardized horizontal size
+    }
+  };
+
+  const getAdSize = () => {
+    switch (type) {
+      case 'vertical':
+        return '300x400';
+      case 'square':
+        return '300x200';
+      default:
+        return '300x100';
     }
   };
 
@@ -23,7 +34,7 @@ const AdBanner: React.FC<AdBannerProps> = ({ type = 'horizontal', className = ''
       <div className="text-center">
         <div className="text-gray-400 text-sm font-medium mb-1">Advertisement</div>
         <div className="text-gray-300 text-xs">
-          {type === 'horizontal' ? '728x90' : type === 'vertical' ? '300x250' : '250x250'}
+          {getAdSize()}
         </div>
       </div>
     </div>

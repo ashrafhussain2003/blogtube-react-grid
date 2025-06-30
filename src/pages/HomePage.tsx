@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Hash, TrendingUp, Eye, Clock, User, Calendar, Brain, Monitor, Code, Settings, Cloud, Database, Smartphone, Palette } from 'lucide-react';
@@ -5,6 +6,7 @@ import BlogCard from '../components/BlogCard';
 import SearchBar from '../components/SearchBar';
 import ProfileModal from '../components/ProfileModal';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../components/ui/hover-card';
 import { sampleBlogs } from '../data/sampleBlogs';
 import { BlogMeta } from '../types/blog';
 
@@ -85,17 +87,41 @@ const HomePage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="text-center mb-12 relative">
-          {/* Avatar in top right corner */}
+          {/* Avatar with hover card in top right corner */}
           <div className="absolute top-0 right-0">
-            <button
-              onClick={() => setIsProfileOpen(true)}
-              className="rounded-full hover:ring-2 hover:ring-blue-200 transition-all"
-            >
-              <Avatar className="w-10 h-10">
-                <AvatarImage src="/lovable-uploads/9a90d753-14e1-45e1-8848-b1a046b78ce5.png" alt="Profile" />
-                <AvatarFallback>MAH</AvatarFallback>
-              </Avatar>
-            </button>
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <button
+                  onClick={() => setIsProfileOpen(true)}
+                  className="rounded-full hover:ring-2 hover:ring-blue-200 transition-all"
+                >
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src="/lovable-uploads/9a90d753-14e1-45e1-8848-b1a046b78ce5.png" alt="Profile" />
+                    <AvatarFallback>MAH</AvatarFallback>
+                  </Avatar>
+                </button>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-80" align="end">
+                <div className="flex justify-between space-x-4">
+                  <Avatar>
+                    <AvatarImage src="/lovable-uploads/9a90d753-14e1-45e1-8848-b1a046b78ce5.png" />
+                    <AvatarFallback>MAH</AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-semibold">About Developer</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Mohammed Ashraf Hussain - Full Stack Developer with expertise in Java, Python, AWS, Azure, GCP, and DevOps.
+                    </p>
+                    <div className="flex items-center pt-2">
+                      <Calendar className="mr-2 h-4 w-4 opacity-70" />
+                      <span className="text-xs text-muted-foreground">
+                        Click to view full profile
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </div>
 
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
@@ -124,30 +150,29 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Hashtags Section */}
+        {/* Browse by Topics Section */}
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-6">
             <Hash className="w-6 h-6 text-blue-600" />
             <h2 className="text-2xl font-bold text-gray-900">Browse by Topics</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {allHashtags.map(({ hashtag, count }) => {
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {allHashtags.slice(0, 12).map(({ hashtag, count }) => {
               const IconComponent = getTopicIcon(hashtag);
               return (
-                <BlogCard
+                <Link
                   key={hashtag}
-                  blog={{
-                    title: `#${hashtag}`,
-                    description: `${count} articles`,
-                    author: 'Various Authors',
-                    publishedDate: new Date().toISOString(),
-                    readingTime: 0,
-                    hashtags: [hashtag],
-                    slug: hashtag,
-                    viewCount: count
-                  }}
-                  className="cursor-pointer"
-                />
+                  to={`/hashtag/${hashtag}`}
+                  className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 group"
+                >
+                  <IconComponent className="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" />
+                  <h3 className="text-sm font-medium text-gray-900 mb-1 capitalize">
+                    {hashtag}
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    {count} articles
+                  </p>
+                </Link>
               );
             })}
           </div>
