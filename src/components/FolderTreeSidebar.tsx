@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Folder, FolderOpen, FileText, Menu, X } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, FolderOpen, FileText } from 'lucide-react';
 import { FolderNode } from '../types/folderTree';
 
 interface FolderTreeSidebarProps {
@@ -15,8 +15,6 @@ const FolderTreeSidebar: React.FC<FolderTreeSidebarProps> = ({
   tree,
   activeSlug,
   onBlogSelect,
-  isOpen,
-  onToggle,
 }) => {
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
 
@@ -80,37 +78,14 @@ const FolderTreeSidebar: React.FC<FolderTreeSidebarProps> = ({
   };
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-
-      {/* Mobile toggle button */}
-      <button
-        onClick={onToggle}
-        className="fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md lg:hidden border border-gray-200"
-      >
-        {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen w-80 bg-white border-r border-gray-200 overflow-y-auto z-50 transform transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-        }`}
-      >
-        <div className="p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Topics</h2>
-        </div>
-        <nav className="py-2">
-          {tree.map(node => renderNode(node))}
-        </nav>
-      </aside>
-    </>
+    <aside className="h-screen bg-white border-r border-gray-200 overflow-y-auto sticky top-0">
+      <div className="p-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900">Topics</h2>
+      </div>
+      <nav className="py-2">
+        {tree.map(node => renderNode(node))}
+      </nav>
+    </aside>
   );
 };
 

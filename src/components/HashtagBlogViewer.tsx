@@ -2,18 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types/blog';
 import BlogRenderer from './BlogRenderer';
+import AdBanner from './AdBanner';
 import { Clock, User, Calendar, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { sampleBlogs } from '../data/sampleBlogs';
 
 interface HashtagBlogViewerProps {
   blogPath: string | null;
   isLoading: boolean;
+  hashtag?: string;
 }
 
-const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoading }) => {
+const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoading, hashtag }) => {
   const [blog, setBlog] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get related blogs based on hashtag
+  const getRelatedBlogs = () => {
+    if (!hashtag) return [];
+    return sampleBlogs
+      .filter(b => b.hashtags.includes(hashtag.toLowerCase()))
+      .slice(0, 8);
+  };
+
+  const relatedBlogs = getRelatedBlogs();
 
   useEffect(() => {
     if (!blogPath) return;
@@ -23,7 +36,7 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
       setError(null);
       
       try {
-        // Simulate API call with sample data since we don't have actual JSON files
+        // Simulate API call with sample data
         const sampleBlog: BlogPost = {
           meta: {
             title: "Getting Started with React Hooks",
@@ -65,7 +78,6 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
           ]
         };
 
-        // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 300));
         setBlog(sampleBlog);
       } catch (err) {
@@ -113,8 +125,9 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
   }
 
   return (
-    <div className="flex-1 bg-white">
-      <div className="max-w-4xl mx-auto">
+    <div className="flex bg-white">
+      {/* Main Content */}
+      <div className="flex-1 max-w-4xl">
         {/* Blog Header */}
         <div className="px-6 lg:px-8 pt-8 pb-4">
           {/* Hashtags */}
@@ -165,14 +178,63 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
           </div>
         </article>
 
-        {/* Related Articles Sidebar */}
+        {/* Related Articles Section */}
         <div className="px-6 lg:px-8 pb-8">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-            <h3 className="text-xl font-semibold mb-2">Related Articles</h3>
-            <p className="text-blue-100">Getting Started with React Hooks</p>
+          <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white mb-8">
+            <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {relatedBlogs.slice(0, 4).map(relatedBlog => (
+                <Link
+                  key={relatedBlog.slug}
+                  to={`/blog/${relatedBlog.slug}`}
+                  className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                >
+                  <h4 className="font-medium text-white mb-2 line-clamp-2">
+                    {relatedBlog.title}
+                  </h4>
+                  <div className="flex items-center gap-2 text-blue-100 text-sm">
+                    <User className="w-3 h-3" />
+                    <span>{relatedBlog.author}</span>
+                    <span>•</span>
+                    <span>{relatedBlog.readingTime} min</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Right Sidebar - Advertisements */}
+      <aside className="w-80 flex-shrink-0 p-6 space-y-6">
+        <AdBanner type="vertical" className="mb-6" />
+        <AdBanner type="square" className="mb-6" />
+        <AdBanner type="square" className="mb-6" />
+        
+        {/* Additional Related Blogs */}
+        {relatedBlogs.length > 4 && (
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-4">More on {hashtag}</h4>
+            <div className="space-y-3">
+              {relatedBlogs.slice(4, 8).map(blog => (
+                <Link
+                  key={blog.slug}
+                  to={`/blog/${blog.slug}`}
+                  className="block hover:bg-white p-2 rounded transition-colors"
+                >
+                  <div className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
+                    {blog.title}
+                  </div>
+                  <div className="text-xs text-gray-500 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {blog.readingTime} min read
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </aside>
     </div>
   );
 };

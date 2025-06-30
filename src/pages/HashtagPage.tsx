@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Hash, Menu, X, EyeOff } from 'lucide-react';
+import { ArrowLeft, Hash } from 'lucide-react';
 import FolderTreeSidebar from '../components/FolderTreeSidebar';
 import HashtagBlogViewer from '../components/HashtagBlogViewer';
 import { FolderNode } from '../types/folderTree';
@@ -12,8 +12,6 @@ const HashtagPage: React.FC = () => {
   const [tree, setTree] = useState<FolderNode[]>([]);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeBlogPath, setActiveBlogPath] = useState<string | null>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarHidden, setSidebarHidden] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,18 +49,6 @@ const HashtagPage: React.FC = () => {
   const handleBlogSelect = (slug: string, path: string) => {
     setActiveSlug(slug);
     setActiveBlogPath(path);
-    setSidebarOpen(false); // Close sidebar on mobile after selection
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleSidebarVisibility = () => {
-    setSidebarHidden(!sidebarHidden);
-    if (sidebarHidden) {
-      setSidebarOpen(true);
-    }
   };
 
   if (loading) {
@@ -80,7 +66,7 @@ const HashtagPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link
@@ -88,7 +74,7 @@ const HashtagPage: React.FC = () => {
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Back to Blogs</span>
+                <span className="font-medium">Blogs</span>
               </Link>
               <div className="flex items-center gap-2">
                 <Hash className="w-6 h-6 text-blue-600" />
@@ -97,40 +83,32 @@ const HashtagPage: React.FC = () => {
                 </h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleSidebarVisibility}
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
-                title={sidebarHidden ? "Show sidebar" : "Hide sidebar"}
-              >
-                <EyeOff className="w-5 h-5" />
-              </button>
-              <Link to="/" className="text-xl font-bold text-black">
-                BlogTube
-              </Link>
-            </div>
+            <Link to="/" className="text-xl font-bold text-black">
+              BlogTube
+            </Link>
           </div>
         </div>
       </header>
 
       <div className="flex">
-        {/* Sidebar */}
-        {!sidebarHidden && (
+        {/* Static Sidebar */}
+        <div className="w-80 flex-shrink-0">
           <FolderTreeSidebar
             tree={tree}
             activeSlug={activeSlug}
             onBlogSelect={handleBlogSelect}
-            isOpen={sidebarOpen}
-            onToggle={toggleSidebar}
+            isOpen={true}
+            onToggle={() => {}}
           />
-        )}
+        </div>
 
         {/* Main Content */}
-        <main className={`flex-1 ${sidebarHidden ? '' : 'lg:ml-0'}`}>
+        <main className="flex-1">
           {tree.length > 0 ? (
             <HashtagBlogViewer
               blogPath={activeBlogPath}
               isLoading={loading}
+              hashtag={hashtag}
             />
           ) : (
             <div className="flex-1 flex items-center justify-center p-8">
