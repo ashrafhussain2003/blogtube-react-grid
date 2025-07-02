@@ -207,20 +207,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
               className="block px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
               onClick={() => setShowSuggestions(false)}
             >
-              <div className="font-medium text-gray-900 truncate">{blog.title}</div>
-              <div className="text-sm text-gray-500 truncate">
-                {blog.folderName && `in ${blog.folderName} • `}
-                by {blog.author}
-              </div>
-              <div className="flex items-center justify-between mt-1">
-                <div className="flex gap-1">
-                  {blog.hashtags.slice(0, 2).map(tag => (
-                    <span key={tag} className="text-xs bg-blue-100 text-blue-600 px-1 rounded">
-                      #{tag}
-                    </span>
-                  ))}
+              <div className="text-left">
+                <div className="font-medium text-gray-900 text-left mb-1">{blog.title}</div>
+                <div className="text-sm text-gray-500 text-left mb-2">
+                  {blog.folderName && `in ${blog.folderName} • `}
+                  by {blog.author}
                 </div>
-                <span className="text-xs text-gray-400">{getMatchTypeLabel(blog.matchType)}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-1">
+                    {blog.hashtags && blog.hashtags.length > 0 && blog.hashtags.slice(0, 2).map(tag => (
+                      <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">{getMatchTypeLabel(blog.matchType)}</span>
+                </div>
               </div>
             </Link>
           ))}

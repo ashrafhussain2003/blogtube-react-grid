@@ -16,7 +16,7 @@ React is a powerful JavaScript library for building user interfaces, particularl
 
 React is a declarative, efficient, and flexible JavaScript library for building user interfaces. It lets you compose complex UIs from small and isolated pieces of code called "components."
 
-> **Note:** React was created by Facebook and is now maintained by Facebook and the community.
+React was created by Facebook and is now maintained by Facebook and the community.
 
 ## Key Concepts
 
@@ -25,8 +25,6 @@ Components are the building blocks of any React application. They let you split 
 
 ### JSX
 JSX is a syntax extension for JavaScript that allows you to write HTML-like code in your JavaScript files.
-
-![React Component Structure](/api/placeholder/800/400)
 
 ## Setting Up Your First React App
 
@@ -38,7 +36,7 @@ cd my-app
 npm start
 ```
 
-> **Alert:** Make sure you have Node.js installed on your system before running these commands.
+Make sure you have Node.js installed on your system before running these commands.
 
 ## Your First Component
 
@@ -47,6 +45,27 @@ Here's how to create your first React component:
 ```jsx
 function Welcome(props) {
   return <h1>Hello, {props.name}!</h1>;
+}
+```
+
+## State and Props
+
+React components can have state (internal data) and props (data passed from parent components).
+
+```jsx
+import React, { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
 }
 ```
 

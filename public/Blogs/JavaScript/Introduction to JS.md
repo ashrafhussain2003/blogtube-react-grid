@@ -16,7 +16,7 @@ JavaScript is a versatile, high-level programming language that has become one o
 
 JavaScript is a programming language that enables interactive web pages and is an essential part of web applications. The vast majority of websites use it for client-side page behavior.
 
-> **Note:** JavaScript was created in 1995 by Brendan Eich while he was working at Netscape Communications.
+JavaScript was created in 1995 by Brendan Eich while he was working at Netscape Communications.
 
 ## Key Features
 
@@ -25,8 +25,6 @@ JavaScript is dynamically typed, meaning you don't need to specify variable type
 
 ### First-Class Functions
 Functions in JavaScript are treated as first-class citizens, meaning they can be assigned to variables, passed as arguments, and returned from other functions.
-
-![JavaScript Code Example](/api/placeholder/800/400)
 
 ## Basic Syntax
 
@@ -44,9 +42,12 @@ var city = "New York";
 function greet(name) {
   return `Hello, ${name}!`;
 }
+
+// Arrow function
+const greetArrow = (name) => `Hello, ${name}!`;
 ```
 
-> **Alert:** Always use `const` for values that won't change and `let` for variables that will be reassigned.
+Always use `const` for values that won't change and `let` for variables that will be reassigned.
 
 ## Modern JavaScript (ES6+)
 
@@ -56,6 +57,27 @@ Modern JavaScript includes many powerful features like:
 - Destructuring
 - Modules
 - Classes
+- Async/await
+
+### Example of Modern Features
+```javascript
+// Destructuring
+const { name, age } = person;
+
+// Template literals
+const message = `Hello, ${name}! You are ${age} years old.`;
+
+// Async/await
+async function fetchData() {
+  try {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+```
 
 ## Conclusion
 
