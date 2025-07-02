@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Hash } from 'lucide-react';
 import HashtagBlogViewer from '../components/HashtagBlogViewer';
 import { FolderNode } from '../types/folderTree';
@@ -10,6 +10,9 @@ import { blogService } from '../services/blogService';
 
 const HashtagPage: React.FC = () => {
   const { hashtag } = useParams<{ hashtag: string }>();
+  const [searchParams] = useSearchParams();
+  const blogParam = searchParams.get('blog');
+  
   const [tree, setTree] = useState<FolderNode[]>([]);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeBlogPath, setActiveBlogPath] = useState<string | null>(null);
@@ -21,6 +24,17 @@ const HashtagPage: React.FC = () => {
     }
   }, [hashtag]);
 
+  useEffect(() => {
+    if (blogParam && tree.length > 0) {
+      // Find the blog in the tree by slug
+      const blogNode = findBlogBySlug(tree, blogParam);
+      if (blogNode) {
+        setActiveSlug(blogNode.slug);
+        setActiveBlogPath(blogNode.path);
+      }
+    }
+  }, [blogParam, tree]);
+
   const loadHashtagContent = async (hashtagName: string) => {
     setLoading(true);
     
@@ -29,17 +43,32 @@ const HashtagPage: React.FC = () => {
       const hashtagTree = await blogService.getFolderTree(hashtagName);
       setTree(hashtagTree);
       
-      // Find and auto-load the first blog
-      const firstBlog = findFirstBlog(hashtagTree);
-      if (firstBlog) {
-        setActiveSlug(firstBlog.slug);
-        setActiveBlogPath(firstBlog.path);
+      // If no specific blog is requested via URL, find and auto-load the first blog
+      if (!blogParam) {
+        const firstBlog = findFirstBlog(hashtagTree);
+        if (firstBlog) {
+          setActiveSlug(firstBlog.slug);
+          setActiveBlogPath(firstBlog.path);
+        }
       }
     } catch (error) {
       console.error('Error loading hashtag content:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const findBlogBySlug = (nodes: FolderNode[], slug: string): { slug: string; path: string } | null => {
+    for (const node of nodes) {
+      if (node.type === 'blog' && node.slug === slug && node.path) {
+        return { slug: node.slug, path: node.path };
+      }
+      if (node.children) {
+        const result = findBlogBySlug(node.children, slug);
+        if (result) return result;
+      }
+    }
+    return null;
   };
 
   const findFirstBlog = (nodes: FolderNode[]): { slug: string; path: string } | null => {

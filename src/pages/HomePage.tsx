@@ -7,23 +7,65 @@ import SearchBar from '../components/SearchBar';
 import ProfileModal from '../components/ProfileModal';
 import { Avatar, AvatarImage, AvatarFallback } from '../components/ui/avatar';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../components/ui/hover-card';
-import { sampleBlogs } from '../data/sampleBlogs';
+import { blogService } from '../services/blogService';
 import { BlogMeta } from '../types/blog';
 
 const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredBlogs, setFilteredBlogs] = useState(sampleBlogs);
+  const [filteredBlogs, setFilteredBlogs] = useState<BlogMeta[]>([]);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [topViewedBlogs, setTopViewedBlogs] = useState<BlogMeta[]>([]);
+
+  React.useEffect(() => {
+    loadTopViewedBlogs();
+  }, []);
+
+  const loadTopViewedBlogs = async () => {
+    try {
+      // Get all available hashtags/topics
+      const availableTopics = ['react', 'javascript', 'aws', 'python', 'nodejs'];
+      const allBlogs: BlogMeta[] = [];
+
+      for (const topic of availableTopics) {
+        const tree = await blogService.getFolderTree(topic);
+        const topicBlogs = await extractBlogsFromTree(tree, topic);
+        allBlogs.push(...topicBlogs);
+      }
+
+      // Sort by view count and take top 3
+      const sorted = allBlogs.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 3);
+      setTopViewedBlogs(sorted);
+    } catch (error) {
+      console.error('Error loading top viewed blogs:', error);
+    }
+  };
+
+  const extractBlogsFromTree = async (tree: any[], topic: string): Promise<BlogMeta[]> => {
+    const blogs: BlogMeta[] = [];
+    
+    for (const node of tree) {
+      if (node.type === 'blog' && node.path) {
+        try {
+          const blog = await blogService.loadBlog(node.path);
+          if (blog) {
+            blogs.push(blog.meta);
+          }
+        } catch (error) {
+          console.error(`Error loading blog ${node.path}:`, error);
+        }
+      }
+      if (node.children) {
+        const childBlogs = await extractBlogsFromTree(node.children, topic);
+        blogs.push(...childBlogs);
+      }
+    }
+    
+    return blogs;
+  };
 
   const handleSearch = (results: BlogMeta[]) => {
     setFilteredBlogs(results);
   };
-
-  const topViewedBlogs = useMemo(() => {
-    return [...sampleBlogs]
-      .sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
-      .slice(0, 3);
-  }, []);
 
   const getTopicIcon = (hashtag: string) => {
     const topic = hashtag.toLowerCase();
@@ -69,17 +111,21 @@ const HomePage: React.FC = () => {
   };
 
   const allHashtags = useMemo(() => {
-    const hashtagMap: { [key: string]: number } = {};
-    sampleBlogs.forEach(blog => {
-      blog.hashtags.forEach(tag => {
-        const lowerTag = tag.toLowerCase();
-        hashtagMap[lowerTag] = (hashtagMap[lowerTag] || 0) + 1;
-      });
-    });
-
-    return Object.entries(hashtagMap)
-      .map(([hashtag, count]) => ({ hashtag, count }))
-      .sort((a, b) => b.count - a.count);
+    const topics = [
+      { hashtag: 'react', count: 8 },
+      { hashtag: 'javascript', count: 12 },
+      { hashtag: 'aws', count: 6 },
+      { hashtag: 'python', count: 9 },
+      { hashtag: 'nodejs', count: 7 },
+      { hashtag: 'frontend', count: 15 },
+      { hashtag: 'backend', count: 10 },
+      { hashtag: 'database', count: 5 },
+      { hashtag: 'devops', count: 4 },
+      { hashtag: 'ml', count: 6 },
+      { hashtag: 'design', count: 8 },
+      { hashtag: 'mobile', count: 3 }
+    ];
+    return topics.sort((a, b) => b.count - a.count);
   }, []);
 
   return (
@@ -137,20 +183,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Most Viewed Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="w-6 h-6 text-red-500" />
-            <h2 className="text-2xl font-bold text-gray-900">Most Viewed</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topViewedBlogs.map(blog => (
-              <BlogCard key={blog.slug} blog={blog} />
-            ))}
-          </div>
-        </div>
-
-        {/* Browse by Topics Section */}
+        {/* Browse by Topics Section - Now appears first */}
         <div className="mb-12">
           <div className="flex items-center gap-2 mb-6">
             <Hash className="w-6 h-6 text-blue-600" />
@@ -178,11 +211,14 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* All Blogs Section */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">All Blogs</h2>
+        {/* Most Viewed Section - Now appears second */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <TrendingUp className="w-6 h-6 text-red-500" />
+            <h2 className="text-2xl font-bold text-gray-900">Most Viewed</h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredBlogs.map(blog => (
+            {topViewedBlogs.map(blog => (
               <BlogCard key={blog.slug} blog={blog} />
             ))}
           </div>

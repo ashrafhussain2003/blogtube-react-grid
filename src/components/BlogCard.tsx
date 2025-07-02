@@ -10,9 +10,12 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
+  // Determine the link path based on whether it's a folder-based blog or regular blog
+  const linkPath = blog.hashtags.length > 0 ? `/hashtag/${blog.hashtags[0]}?blog=${blog.slug}` : `/blog/${blog.slug}`;
+
   return (
     <div className={`block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 border border-gray-200 ${className}`}>
-      <Link to={`/blog/${blog.slug}`}>
+      <Link to={linkPath}>
         <div className="relative">
           <div className="w-full h-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 rounded-t-lg flex items-center justify-center">
             <h3 className="text-gray-800 text-xl font-bold text-center px-4 line-clamp-2">
@@ -28,7 +31,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
       </Link>
       
       <div className="p-4">
-        <Link to={`/blog/${blog.slug}`}>
+        <Link to={linkPath}>
           <p className="text-gray-600 text-sm mb-3 line-clamp-2">
             {blog.description}
           </p>
