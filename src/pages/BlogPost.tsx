@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { BlogPost as BlogPostType } from '../types/blog';
-import { sampleBlogs } from '../data/sampleBlogs';
+import { blogService } from '../services/blogService';
 import BlogRenderer from '../components/BlogRenderer';
 import CommentSection from '../components/CommentSection';
 import AdBanner from '../components/AdBanner';
@@ -14,69 +14,78 @@ const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [blog, setBlog] = useState<BlogPostType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [relatedBlogs, setRelatedBlogs] = useState(sampleBlogs.slice(0, 4));
+  const [relatedBlogs, setRelatedBlogs] = useState<any[]>([]);
 
   useEffect(() => {
     const loadBlog = async () => {
       setLoading(true);
       
-      // Simulate loading blog from JSON file
-      setTimeout(() => {
-        const blogMeta = sampleBlogs.find(b => b.slug === slug);
-        if (blogMeta) {
-          // Mock blog content
-          const mockBlog: BlogPostType = {
-            meta: blogMeta,
-            blocks: [
-              {
-                type: 'text',
-                content: 'This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn.'
-              },
-              {
-                type: 'text',
-                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
-              },
-              {
-                type: 'note',
-                content: 'This is an important note that readers should pay attention to. It contains crucial information that enhances understanding.'
-              },
-              {
-                type: 'text',
-                content: 'Here we dive deeper into the main concepts. This paragraph provides detailed explanations and examples that help readers grasp the fundamental ideas.'
-              },
-              {
-                type: 'image',
-                content: '/api/placeholder/800/400',
-                alt: 'Illustration of key concepts discussed in the article'
-              },
-              {
-                type: 'text',
-                content: 'Following the visual representation above, we can see how these concepts apply in real-world scenarios. The implementation details are crucial for practical application.'
-              },
-              {
-                type: 'alert',
-                content: 'Warning: Make sure to follow best practices when implementing these concepts to avoid common pitfalls and security issues.'
-              },
-              {
-                type: 'text',
-                content: 'Now that we have covered the basics, let\'s explore some advanced techniques that can take your skills to the next level. These methods require a solid understanding of the fundamentals.'
-              },
-              {
-                type: 'text',
-                content: 'The final section provides practical examples and code snippets that you can use in your own projects. Remember to adapt these examples to your specific use case and requirements.'
-              }
-            ]
-          };
-          setBlog(mockBlog);
+      try {
+        // Find the blog path from all available topics
+        const topics = ['react', 'javascript', 'aws', 'python', 'nodejs'];
+        let foundBlog: BlogPostType | null = null;
+
+        for (const topic of topics) {
+          const tree = await blogService.getFolderTree(topic);
+          const blogPath = findBlogPathInTree(tree, slug);
+          
+          if (blogPath) {
+            foundBlog = await blogService.loadBlog(blogPath);
+            if (foundBlog) {
+              // Load related blogs from the same topic
+              const related = await getRelatedBlogs(tree, slug);
+              setRelatedBlogs(related.slice(0, 4));
+              break;
+            }
+          }
         }
+
+        setBlog(foundBlog);
+      } catch (error) {
+        console.error('Error loading blog:', error);
+      } finally {
         setLoading(false);
-      }, 300);
+      }
     };
 
     if (slug) {
       loadBlog();
     }
   }, [slug]);
+
+  const findBlogPathInTree = (tree: any[], targetSlug: string | undefined): string | null => {
+    for (const node of tree) {
+      if (node.type === 'blog' && node.slug === targetSlug) {
+        return node.path;
+      }
+      if (node.children) {
+        const found = findBlogPathInTree(node.children, targetSlug);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  const getRelatedBlogs = async (tree: any[], currentSlug: string | undefined) => {
+    const blogs = [];
+    for (const node of tree) {
+      if (node.type === 'blog' && node.slug !== currentSlug) {
+        try {
+          const blogData = await blogService.loadBlog(node.path);
+          if (blogData) {
+            blogs.push(blogData.meta);
+          }
+        } catch (error) {
+          console.error('Error loading related blog:', error);
+        }
+      }
+      if (node.children) {
+        const childBlogs = await getRelatedBlogs(node.children, currentSlug);
+        blogs.push(...childBlogs);
+      }
+    }
+    return blogs;
+  };
 
   if (loading) {
     return (
@@ -110,8 +119,8 @@ const BlogPost: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Main Content */}
-          <main className="flex-1 max-w-4xl">
+          {/* Main Content - Increased width */}
+          <main className="flex-grow max-w-5xl">
             <article className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Article Header */}
               <div className="p-8 border-b border-gray-200">
@@ -159,30 +168,32 @@ const BlogPost: React.FC = () => {
               </div>
 
               {/* Related Articles Section */}
-              <div className="px-8 pb-8">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-                  <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {relatedBlogs.map(relatedBlog => (
-                      <Link
-                        key={relatedBlog.slug}
-                        to={`/blog/${relatedBlog.slug}`}
-                        className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
-                      >
-                        <h4 className="font-medium text-white mb-2 line-clamp-2">
-                          {relatedBlog.title}
-                        </h4>
-                        <div className="flex items-center gap-2 text-blue-100 text-sm">
-                          <User className="w-3 h-3" />
-                          <span>{relatedBlog.author}</span>
-                          <span>•</span>
-                          <span>{relatedBlog.readingTime} min</span>
-                        </div>
-                      </Link>
-                    ))}
+              {relatedBlogs.length > 0 && (
+                <div className="px-8 pb-8">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+                    <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {relatedBlogs.map(relatedBlog => (
+                        <Link
+                          key={relatedBlog.slug}
+                          to={`/blog/${relatedBlog.slug}`}
+                          className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                        >
+                          <h4 className="font-medium text-white mb-2 line-clamp-2">
+                            {relatedBlog.title}
+                          </h4>
+                          <div className="flex items-center gap-2 text-blue-100 text-sm">
+                            <User className="w-3 h-3" />
+                            <span>{relatedBlog.author}</span>
+                            <span>•</span>
+                            <span>{relatedBlog.readingTime} min</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Comments Section */}
               <div className="px-8 pb-8">
@@ -191,14 +202,14 @@ const BlogPost: React.FC = () => {
             </article>
           </main>
 
-          {/* Right Sidebar - More Advertisements */}
-          <aside className="w-80 flex-shrink-0 space-y-4">
-            <AdBanner type="vertical" />
+          {/* Right Sidebar - Fixed width, positioned on the far right */}
+          <aside className="w-[300px] ml-auto flex-shrink-0 space-y-4">
             <AdBanner type="square" />
             <AdBanner type="square" />
-            <AdBanner type="horizontal" />
             <AdBanner type="square" />
-            <AdBanner type="vertical" />
+            <AdBanner type="square" />
+            <AdBanner type="square" />
+            <AdBanner type="square" />
           </aside>
         </div>
       </div>

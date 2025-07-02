@@ -62,47 +62,140 @@ export const parseMarkdown = (content: string): ParsedMarkdown => {
 export const markdownToBlocks = (markdown: string) => {
   const lines = markdown.split('\n');
   const blocks = [];
+  let currentCodeBlock = '';
+  let inCodeBlock = false;
+  let currentListItems: string[] = [];
+  let currentListType: 'ordered' | 'unordered' | null = null;
   
+  const flushList = () => {
+    if (currentListItems.length > 0) {
+      blocks.push({
+        type: 'list',
+        items: [...currentListItems],
+        ordered: currentListType === 'ordered'
+      });
+      currentListItems = [];
+      currentListType = null;
+    }
+  };
+
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    
-    if (line.startsWith('# ')) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+
+    // Handle code blocks
+    if (trimmedLine.startsWith('```')) {
+      if (inCodeBlock) {
+        // End code block
+        blocks.push({
+          type: 'code',
+          content: currentCodeBlock.trim()
+        });
+        currentCodeBlock = '';
+        inCodeBlock = false;
+      } else {
+        // Start code block
+        flushList();
+        inCodeBlock = true;
+      }
+      continue;
+    }
+
+    if (inCodeBlock) {
+      currentCodeBlock += line + '\n';
+      continue;
+    }
+
+    // Handle headings
+    if (trimmedLine.startsWith('#')) {
+      flushList();
+      const level = trimmedLine.match(/^#+/)?.[0].length || 1;
+      const content = trimmedLine.substring(level).trim();
+      
       blocks.push({
-        type: 'title',
-        content: line.substring(2),
-        level: 1
+        type: 'heading',
+        content,
+        level
       });
-    } else if (line.startsWith('## ')) {
-      blocks.push({
-        type: 'title',
-        content: line.substring(3),
-        level: 2
-      });
-    } else if (line.startsWith('![')) {
-      const altMatch = line.match(/!\[(.*?)\]/);
-      const urlMatch = line.match(/\((.*?)\)/);
+      continue;
+    }
+
+    // Handle images
+    if (trimmedLine.startsWith('![')) {
+      flushList();
+      const altMatch = trimmedLine.match(/!\[(.*?)\]/);
+      const urlMatch = trimmedLine.match(/\((.*?)\)/);
       blocks.push({
         type: 'image',
         content: urlMatch ? urlMatch[1] : '/api/placeholder/800/400',
         alt: altMatch ? altMatch[1] : 'Image'
       });
-    } else if (line.startsWith('> **Note:**')) {
+      continue;
+    }
+
+    // Handle notes and alerts
+    if (trimmedLine.startsWith('> **Note:**')) {
+      flushList();
       blocks.push({
         type: 'note',
-        content: line.substring(11).trim()
+        content: trimmedLine.substring(11).trim()
       });
-    } else if (line.startsWith('> **Alert:**')) {
+      continue;
+    }
+
+    if (trimmedLine.startsWith('> **Alert:**')) {
+      flushList();
       blocks.push({
         type: 'alert',
-        content: line.substring(12).trim()
+        content: trimmedLine.substring(12).trim()
       });
-    } else if (line && !line.startsWith('#')) {
+      continue;
+    }
+
+    // Handle blockquotes
+    if (trimmedLine.startsWith('>') && !trimmedLine.includes('**')) {
+      flushList();
+      blocks.push({
+        type: 'quote',
+        content: trimmedLine.substring(1).trim()
+      });
+      continue;
+    }
+
+    // Handle ordered lists
+    if (/^\d+\.\s/.test(trimmedLine)) {
+      if (currentListType !== 'ordered') {
+        flushList();
+        currentListType = 'ordered';
+      }
+      currentListItems.push(trimmedLine.replace(/^\d+\.\s/, ''));
+      continue;
+    }
+
+    // Handle unordered lists
+    if (/^[-*+]\s/.test(trimmedLine)) {
+      if (currentListType !== 'unordered') {
+        flushList();
+        currentListType = 'unordered';
+      }
+      currentListItems.push(trimmedLine.replace(/^[-*+]\s/, ''));
+      continue;
+    }
+
+    // Handle regular text
+    if (trimmedLine && !trimmedLine.startsWith('#')) {
+      flushList();
       blocks.push({
         type: 'text',
-        content: line
+        content: trimmedLine
       });
+    } else if (!trimmedLine) {
+      flushList();
     }
   }
+
+  // Flush any remaining list
+  flushList();
   
   return blocks;
 };

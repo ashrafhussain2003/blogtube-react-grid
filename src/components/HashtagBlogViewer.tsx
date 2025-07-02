@@ -90,8 +90,8 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
 
   return (
     <div className="flex bg-white">
-      {/* Main Content */}
-      <div className="flex-1 max-w-4xl">
+      {/* Main Content - Increased width */}
+      <div className="flex-grow max-w-5xl">
         <article className="bg-white">
           {/* Article Header */}
           <div className="p-8 border-b border-gray-200">
@@ -139,30 +139,32 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
           </div>
 
           {/* Related Articles Section */}
-          <div className="px-8 pb-8">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-              <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {relatedBlogs.map(relatedBlog => (
-                  <Link
-                    key={relatedBlog.slug}
-                    to={`/blog/${relatedBlog.slug}`}
-                    className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
-                  >
-                    <h4 className="font-medium text-white mb-2 line-clamp-2">
-                      {relatedBlog.title}
-                    </h4>
-                    <div className="flex items-center gap-2 text-blue-100 text-sm">
-                      <User className="w-3 h-3" />
-                      <span>{relatedBlog.author}</span>
-                      <span>•</span>
-                      <span>{relatedBlog.readingTime} min</span>
-                    </div>
-                  </Link>
-                ))}
+          {relatedBlogs.length > 0 && (
+            <div className="px-8 pb-8">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
+                <h3 className="text-xl font-semibold mb-4">Related Articles</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {relatedBlogs.map(relatedBlog => (
+                    <Link
+                      key={relatedBlog.slug}
+                      to={`/blog/${relatedBlog.slug}`}
+                      className="block bg-white/10 hover:bg-white/20 rounded-lg p-4 transition-colors"
+                    >
+                      <h4 className="font-medium text-white mb-2 line-clamp-2">
+                        {relatedBlog.title}
+                      </h4>
+                      <div className="flex items-center gap-2 text-blue-100 text-sm">
+                        <User className="w-3 h-3" />
+                        <span>{relatedBlog.author}</span>
+                        <span>•</span>
+                        <span>{relatedBlog.readingTime} min</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Comments Section */}
           <div className="px-8 pb-8">
@@ -171,10 +173,8 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         </article>
       </div>
 
-      {/* Right Sidebar - Advertisement Sections */}
-      <aside className="w-80 flex-shrink-0 p-6 space-y-4">
-        <AdBanner type="square" />
-        <AdBanner type="square" />
+      {/* Right Sidebar - Fixed width positioned on far right */}
+      <aside className="w-[300px] ml-auto flex-shrink-0 p-6 space-y-4">
         <AdBanner type="square" />
         <AdBanner type="square" />
         <AdBanner type="square" />

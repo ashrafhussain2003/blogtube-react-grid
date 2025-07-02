@@ -12,10 +12,12 @@ export interface BlogMeta {
 }
 
 export interface BlogBlock {
-  type: 'title' | 'text' | 'image' | 'note' | 'alert' | 'meta';
+  type: 'title' | 'heading' | 'text' | 'image' | 'note' | 'alert' | 'meta' | 'code' | 'list' | 'quote';
   content: string;
-  level?: number; // for title blocks (h1, h2, etc.)
+  level?: number; // for heading blocks (h1, h2, etc.)
   alt?: string; // for image blocks
+  items?: string[]; // for list blocks
+  ordered?: boolean; // for list blocks
 }
 
 export interface BlogPost {
