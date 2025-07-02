@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types/blog';
 import BlogRenderer from './BlogRenderer';
@@ -6,6 +7,7 @@ import AdBanner from './AdBanner';
 import { Clock, User, Calendar, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { sampleBlogs } from '../data/sampleBlogs';
+import { blogService } from '../services/blogService';
 
 interface HashtagBlogViewerProps {
   blogPath: string | null;
@@ -36,49 +38,12 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
       setError(null);
       
       try {
-        // Simulate API call with sample data
-        const sampleBlog: BlogPost = {
-          meta: {
-            title: "Getting Started with React Hooks",
-            author: "Sarah Johnson",
-            publishedDate: "2024-01-15",
-            readingTime: 8,
-            viewCount: 12500,
-            hashtags: ["react", "javascript", "frontend", "hooks"],
-            slug: "getting-started-react-hooks",
-            description: "This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn."
-          },
-          blocks: [
-            {
-              type: 'text',
-              content: 'This is an introduction paragraph that sets the context for the entire article. It provides readers with a clear understanding of what they can expect to learn.'
-            },
-            {
-              type: 'text',
-              content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.'
-            },
-            {
-              type: 'note',
-              content: 'This is an important note that readers should pay attention to. It contains crucial information that enhances understanding.'
-            },
-            {
-              type: 'text',
-              content: 'Here we dive deeper into the main concepts. This paragraph provides detailed explanations and examples that help readers understand the topic better.'
-            },
-            {
-              type: 'image',
-              content: '/api/placeholder/800/400',
-              alt: 'Illustration of key concepts discussed in the article'
-            },
-            {
-              type: 'text',
-              content: 'Following the visual representation above, we can see how these concepts apply in real-world scenarios. The implementation details are crucial for practical application.'
-            }
-          ]
-        };
-
-        await new Promise(resolve => setTimeout(resolve, 300));
-        setBlog(sampleBlog);
+        const loadedBlog = await blogService.loadBlog(blogPath);
+        if (loadedBlog) {
+          setBlog(loadedBlog);
+        } else {
+          setError('Failed to load blog content');
+        }
       } catch (err) {
         setError('Failed to load blog content');
         console.error('Error loading blog:', err);
@@ -206,15 +171,15 @@ const HashtagBlogViewer: React.FC<HashtagBlogViewerProps> = ({ blogPath, isLoadi
         </article>
       </div>
 
-      {/* Right Sidebar - Standardized Advertisement Sizes */}
+      {/* Right Sidebar - Advertisement Sections */}
       <aside className="w-80 flex-shrink-0 p-6 space-y-4">
         <AdBanner type="square" />
         <AdBanner type="square" />
-        <AdBanner type="horizontal" />
         <AdBanner type="square" />
-        <AdBanner type="horizontal" />
         <AdBanner type="square" />
-        <AdBanner type="horizontal" />
+        <AdBanner type="square" />
+        <AdBanner type="square" />
+        <AdBanner type="square" />
         <AdBanner type="square" />
       </aside>
     </div>
