@@ -10,20 +10,20 @@ interface BlogCardProps {
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
-  // Determine the link path based on whether it's a folder-based blog or regular blog
-  const linkPath = blog.hashtags.length > 0 ? `/hashtag/${blog.hashtags[0]}?blog=${blog.slug}` : `/blog/${blog.slug}`;
+  // Always use hashtag-based routing to ensure proper loading from /Blogs folder
+  const linkPath = `/hashtag/${blog.hashtags[0]}?blog=${blog.slug}`;
 
   return (
     <div className={`block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-1 border border-gray-200 ${className}`}>
       <Link to={linkPath}>
         <div className="relative">
-          <div className="w-full h-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 rounded-t-lg flex items-center justify-center">
-            <h3 className="text-gray-800 text-xl font-bold text-center px-4 line-clamp-2">
+          <div className="w-full h-48 bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300 rounded-t-lg flex items-center justify-center">
+            <h3 className="text-blue-800 text-xl font-bold text-center px-4 line-clamp-2">
               {blog.title}
             </h3>
           </div>
           {blog.featured && (
-            <div className="absolute top-2 right-2 bg-gray-800 text-white px-2 py-1 rounded text-xs font-semibold">
+            <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded text-xs font-semibold">
               Featured
             </div>
           )}
@@ -49,6 +49,11 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
             <Clock className="w-4 h-4" />
             <span>{blog.readingTime} min read</span>
           </div>
+          {blog.viewCount && (
+            <div className="text-xs text-gray-400">
+              {blog.viewCount.toLocaleString()} views
+            </div>
+          )}
         </div>
         
         <div className="flex flex-wrap gap-1">
@@ -56,7 +61,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ blog, className = '' }) => {
             <Link
               key={tag}
               to={`/hashtag/${tag}`}
-              className="inline-block bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs hover:bg-gray-200 transition-colors border border-gray-300"
+              className="inline-block bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs hover:bg-blue-200 transition-colors border border-blue-300"
             >
               #{tag}
             </Link>

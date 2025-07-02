@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Hash, TrendingUp, Eye, Clock, User, Calendar, Brain, Monitor, Code, Settings, Cloud, Database, Smartphone, Palette } from 'lucide-react';
+import { Hash, TrendingUp, Eye, Clock, User, Calendar } from 'lucide-react';
 import BlogCard from '../components/BlogCard';
 import SearchBar from '../components/SearchBar';
 import ProfileModal from '../components/ProfileModal';
@@ -69,61 +69,60 @@ const HomePage: React.FC = () => {
 
   const getTopicIcon = (hashtag: string) => {
     const topic = hashtag.toLowerCase();
+    const iconStyle = "w-8 h-8 group-hover:scale-110 transition-transform";
+    
     switch (topic) {
-      case 'javascript':
       case 'react':
-      case 'vue':
-      case 'angular':
-      case 'frontend':
-        return Monitor;
-      case 'backend':
-      case 'api':
-      case 'nodejs':
-        return Code;
-      case 'ml':
-      case 'ai':
-      case 'machinelearning':
-        return Brain;
+        return (
+          <svg className={iconStyle} viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="2"/>
+            <path d="M12 2C9.5 4.5 7 7.5 7 12s2.5 7.5 5 10c2.5-2.5 5-5.5 5-10s-2.5-7.5-5-10z"/>
+            <path d="M2 12c2.5-2.5 5.5-5 10-5s7.5 2.5 10 5c-2.5 2.5-5.5 5-10 5s-7.5-2.5-10-5z"/>
+          </svg>
+        );
+      case 'javascript':
+        return (
+          <svg className={iconStyle} viewBox="0 0 24 24" fill="currentColor">
+            <rect x="2" y="2" width="20" height="20" rx="2"/>
+            <path d="M7 15c0 1.5 1 2.5 2.5 2.5S12 16.5 12 15V9h-2v6c0 .5-.5 1-1 1s-1-.5-1-1h-2z"/>
+            <path d="M15 17.5c1.5 0 2.5-1 2.5-2.5 0-1-.5-1.5-1.5-2l-1-.5c-.5-.25-.5-.5-.5-.75 0-.5.5-.75 1-.75s1 .25 1 .75h2c0-1.5-1-2.5-2.5-2.5S13.5 10 13.5 11.5c0 1 .5 1.5 1.5 2l1 .5c.5.25.5.5.5.75 0 .5-.5.75-1 .75s-1-.25-1-.75h-2z"/>
+          </svg>
+        );
       case 'aws':
-      case 'azure':
-      case 'gcp':
-      case 'cloud':
-        return Cloud;
-      case 'database':
-      case 'sql':
-      case 'mongodb':
-        return Database;
-      case 'mobile':
-      case 'android':
-      case 'ios':
-        return Smartphone;
-      case 'design':
-      case 'ui':
-      case 'ux':
-        return Palette;
-      case 'devops':
-      case 'docker':
-      case 'kubernetes':
-        return Settings;
+        return (
+          <svg className={iconStyle} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6.5 4L12 2l5.5 2v6c0 5-3.5 9-5.5 10-2-1-5.5-5-5.5-10V4z"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+        );
+      case 'python':
+        return (
+          <svg className={iconStyle} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8 2 6 4 6 6v2h6v1H5c-2 0-3 1-3 3v4c0 2 1 3 3 3h2v-2c0-2 2-4 4-4h6c1 0 2-1 2-2V6c0-2-2-4-6-4z"/>
+            <circle cx="9" cy="5" r="1"/>
+            <path d="M12 22c4 0 6-2 6-4v-2h-6v-1h7c2 0 3-1 3-3v-4c0-2-1-3-3-3h-2v2c0 2-2 4-4 4H7c-1 0-2 1-2 2v6c0 2 2 4 6 4z"/>
+            <circle cx="15" cy="19" r="1"/>
+          </svg>
+        );
+      case 'nodejs':
+        return (
+          <svg className={iconStyle} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7v10l10 5 10-5V7l-10-5z"/>
+            <path d="M12 7v10M7 9.5l10 5M7 14.5l10-5"/>
+          </svg>
+        );
       default:
-        return Hash;
+        return <Hash className={iconStyle} />;
     }
   };
 
   const allHashtags = useMemo(() => {
     const topics = [
-      { hashtag: 'react', count: 8 },
-      { hashtag: 'javascript', count: 12 },
+      { hashtag: 'react', count: 6 },
+      { hashtag: 'javascript', count: 6 },
       { hashtag: 'aws', count: 6 },
-      { hashtag: 'python', count: 9 },
-      { hashtag: 'nodejs', count: 7 },
-      { hashtag: 'frontend', count: 15 },
-      { hashtag: 'backend', count: 10 },
-      { hashtag: 'database', count: 5 },
-      { hashtag: 'devops', count: 4 },
-      { hashtag: 'ml', count: 6 },
-      { hashtag: 'design', count: 8 },
-      { hashtag: 'mobile', count: 3 }
+      { hashtag: 'python', count: 6 },
+      { hashtag: 'nodejs', count: 6 }
     ];
     return topics.sort((a, b) => b.count - a.count);
   }, []);
@@ -189,16 +188,17 @@ const HomePage: React.FC = () => {
             <Hash className="w-6 h-6 text-blue-600" />
             <h2 className="text-2xl font-bold text-gray-900">Browse by Topics</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {allHashtags.slice(0, 12).map(({ hashtag, count }) => {
-              const IconComponent = getTopicIcon(hashtag);
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {allHashtags.map(({ hashtag, count }) => {
               return (
                 <Link
                   key={hashtag}
                   to={`/hashtag/${hashtag}`}
-                  className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-200 group"
+                  className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 group hover:-translate-y-1"
                 >
-                  <IconComponent className="w-8 h-8 text-blue-600 mb-3 group-hover:text-blue-700 transition-colors" />
+                  <div className="text-blue-600 mb-3 group-hover:text-blue-700 transition-colors">
+                    {getTopicIcon(hashtag)}
+                  </div>
                   <h3 className="text-sm font-medium text-gray-900 mb-1 capitalize">
                     {hashtag}
                   </h3>
