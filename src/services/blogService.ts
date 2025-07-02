@@ -1,4 +1,3 @@
-
 import { FolderNode } from '../types/folderTree';
 import { parseMarkdown, markdownToBlocks } from '../utils/markdownParser';
 import { BlogPost } from '../types/blog';
@@ -140,7 +139,7 @@ export class BlogService {
     try {
       const markdownContent = await this.fetchMarkdownContent(blogPath);
       const { meta, content } = parseMarkdown(markdownContent);
-      const blocks = markdownToBlogs(content);
+      const blocks = markdownToBlocks(content);
 
       const blog: BlogPost = {
         meta: {
