@@ -1,6 +1,6 @@
 
 import { FolderNode } from '../types/folderTree';
-import { parseMarkdown, markdownToBlogs } from '../utils/markdownParser';
+import { parseMarkdown, markdownToBlocks } from '../utils/markdownParser';
 import { BlogPost } from '../types/blog';
 
 export class BlogService {
